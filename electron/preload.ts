@@ -130,46 +130,4 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
 })
 
-// Type declaration for the renderer
-declare global {
-  interface Window {
-    electronAPI: {
-      getSites: () => Promise<WordPressSite[]>
-      addSite: (site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>) => Promise<WordPressSite>
-      updateSite: (id: string, updates: Partial<WordPressSite>) => Promise<WordPressSite | null>
-      deleteSite: (id: string) => Promise<boolean>
-      checkSiteStatus: (params: {
-        url: string
-        apiKey: string
-        apiSecret: string
-      }) => Promise<SiteStatusResult>
-      fetchFromSite: (params: {
-        url: string
-        method?: string
-        apiKey: string
-        apiSecret: string
-        body?: any
-      }) => Promise<{ ok: boolean; status: number; data: any }>
-      minimizeWindow: () => void
-      maximizeWindow: () => void
-      closeWindow: () => void
-      isMaximized: () => Promise<boolean>
-      getSettings: () => Promise<AppSettings>
-      saveSettings: (settings: AppSettings) => Promise<AppSettings>
-      getSetting: (key: string) => Promise<any>
-      saveSetting: (key: string, value: any) => Promise<AppSettings>
-      // Auto-updater
-      updaterCheck: () => Promise<{
-        status: string
-        updateAvailable?: boolean
-        version?: string
-        message?: string
-      }>
-      updaterDownload: () => Promise<{ status: string; message?: string }>
-      updaterInstall: () => Promise<{ status: string; message?: string }>
-      updaterGetStatus: () => Promise<UpdaterStatus>
-      getAppVersion: () => Promise<string>
-      onUpdateStatus: (callback: (status: UpdateStatus) => void) => () => void
-    }
-  }
-}
+// Type declarations are in src/types/electron.d.ts

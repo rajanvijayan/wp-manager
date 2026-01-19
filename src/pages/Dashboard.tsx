@@ -192,16 +192,19 @@ function StatCard({
 }
 
 function SiteRow({ site }: { site: any }) {
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     online: 'bg-emerald-500',
     offline: 'bg-red-500',
     pending: 'bg-yellow-500',
     error: 'bg-red-500',
+    'no-plugin': 'bg-orange-500',
   }
 
   return (
     <div className="flex cursor-pointer items-center gap-4 rounded-xl bg-white/5 p-4 transition-colors hover:bg-white/10">
-      <div className={`h-3 w-3 rounded-full ${statusColors[site.status]} animate-pulse`} />
+      <div
+        className={`h-3 w-3 rounded-full ${statusColors[site.status] || 'bg-gray-500'} animate-pulse`}
+      />
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium text-white">{site.name}</p>
         <p className="truncate text-sm text-slate-400">{site.url}</p>

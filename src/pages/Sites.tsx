@@ -23,7 +23,7 @@ import {
   FileText,
   Edit3,
 } from 'lucide-react'
-import { useSitesStore, WordPressSite, ClientInfo } from '@/store/sitesStore'
+import { useSitesStore, WordPressSite } from '@/store/sitesStore'
 
 export default function Sites() {
   const [showAddModal, setShowAddModal] = useState(false)

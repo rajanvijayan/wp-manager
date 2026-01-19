@@ -28,12 +28,40 @@ export interface AppSettings {
   siteDownAlerts: boolean
 }
 
+export interface UpdateStatus {
+  status: 'checking' | 'available' | 'not-available' | 'downloading' | 'downloaded' | 'error'
+  data?: {
+    version?: string
+    releaseDate?: string
+    releaseNotes?: string | null
+    percent?: number
+    bytesPerSecond?: number
+    transferred?: number
+    total?: number
+    message?: string
+  }
+}
+
+export interface UpdaterStatus {
+  updateAvailable: boolean
+  updateDownloaded: boolean
+  downloadProgress: number
+  currentVersion: string
+  updateVersion: string | null
+  releaseNotes: string | null
+}
+
 declare global {
   interface Window {
     electronAPI: {
       getSites: () => Promise<WordPressSite[]>
-      addSite: (site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>) => Promise<WordPressSite>
-      updateSite: (id: string, updates: Partial<WordPressSite>) => Promise<WordPressSite | null>
+      addSite: (
+        site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>
+      ) => Promise<WordPressSite>
+      updateSite: (
+        id: string,
+        updates: Partial<WordPressSite>
+      ) => Promise<WordPressSite | null>
       deleteSite: (id: string) => Promise<boolean>
       checkSiteStatus: (params: {
         url: string
@@ -55,6 +83,18 @@ declare global {
       saveSettings: (settings: AppSettings) => Promise<AppSettings>
       getSetting: (key: string) => Promise<any>
       saveSetting: (key: string, value: any) => Promise<AppSettings>
+      // Auto-updater
+      updaterCheck: () => Promise<{
+        status: string
+        updateAvailable?: boolean
+        version?: string
+        message?: string
+      }>
+      updaterDownload: () => Promise<{ status: string; message?: string }>
+      updaterInstall: () => Promise<{ status: string; message?: string }>
+      updaterGetStatus: () => Promise<UpdaterStatus>
+      getAppVersion: () => Promise<string>
+      onUpdateStatus: (callback: (status: UpdateStatus) => void) => () => void
     }
   }
 }

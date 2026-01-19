@@ -29,7 +29,7 @@ interface UpdaterState {
   setStatus: (status: UpdateStatus) => void
 }
 
-export const useUpdaterStore = create<UpdaterState>((set, get) => ({
+export const useUpdaterStore = create<UpdaterState>((set) => ({
   currentVersion: '1.0.0',
   updateStatus: { status: 'idle' },
   isChecking: false,

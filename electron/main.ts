@@ -226,8 +226,12 @@ async function fetchUrl(
 
 // IPC Handlers for site management
 ipcMain.handle('get-sites', () => {
-  const sites = store.get('sites', [])
-  console.log('[WP Manager] Loading sites from store:', sites?.length || 0, 'sites found')
+  const sites = store.get('sites', []) as any[]
+  console.log(
+    '[WP Manager] Loading sites from store:',
+    sites?.length || 0,
+    'sites found'
+  )
   console.log('[WP Manager] Store path:', store.path)
   return sites
 })
