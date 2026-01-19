@@ -78,7 +78,9 @@ class WordPressAPIService {
    */
   async togglePlugin(site: WordPressSite, pluginSlug: string, activate: boolean): Promise<boolean> {
     const client = this.createClient(site)
-    const response = await client.post(`/plugins/${pluginSlug}/${activate ? 'activate' : 'deactivate'}`)
+    const response = await client.post(
+      `/plugins/${pluginSlug}/${activate ? 'activate' : 'deactivate'}`
+    )
     return response.data.success
   }
 
@@ -141,4 +143,3 @@ class WordPressAPIService {
 }
 
 export const wordpressAPI = new WordPressAPIService()
-

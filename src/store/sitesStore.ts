@@ -33,7 +33,7 @@ interface SitesState {
   sites: WordPressSite[]
   isLoading: boolean
   selectedSiteId: string | null
-  
+
   // Actions
   loadSites: () => Promise<void>
   addSite: (site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>) => Promise<WordPressSite>
@@ -73,7 +73,7 @@ export const useSitesStore = create<SitesState>((set, get) => ({
     set({ isLoading: true })
     try {
       let newSite: WordPressSite
-      
+
       if (hasElectronAPI()) {
         console.log('[WP Manager] Adding site via electronAPI:', siteData.name)
         newSite = await window.electronAPI.addSite(siteData)
@@ -87,15 +87,15 @@ export const useSitesStore = create<SitesState>((set, get) => ({
           status: 'pending',
         }
       }
-      
-      set((state) => ({ 
+
+      set((state) => ({
         sites: [...state.sites, newSite],
-        isLoading: false 
+        isLoading: false,
       }))
-      
+
       // Immediately check site status
       setTimeout(() => get().refreshSiteStatus(newSite.id), 500)
-      
+
       return newSite
     } catch (error) {
       console.error('[WP Manager] Failed to add site:', error)
@@ -110,12 +110,12 @@ export const useSitesStore = create<SitesState>((set, get) => ({
         const updated = await window.electronAPI.updateSite(id, updates)
         if (updated) {
           set((state) => ({
-            sites: state.sites.map((s) => (s.id === id ? updated : s))
+            sites: state.sites.map((s) => (s.id === id ? updated : s)),
           }))
         }
       } else {
         set((state) => ({
-          sites: state.sites.map((s) => (s.id === id ? { ...s, ...updates } : s))
+          sites: state.sites.map((s) => (s.id === id ? { ...s, ...updates } : s)),
         }))
       }
     } catch (error) {
@@ -130,7 +130,7 @@ export const useSitesStore = create<SitesState>((set, get) => ({
       }
       set((state) => ({
         sites: state.sites.filter((s) => s.id !== id),
-        selectedSiteId: state.selectedSiteId === id ? null : state.selectedSiteId
+        selectedSiteId: state.selectedSiteId === id ? null : state.selectedSiteId,
       }))
     } catch (error) {
       console.error('Failed to delete site:', error)
@@ -147,7 +147,7 @@ export const useSitesStore = create<SitesState>((set, get) => ({
 
     // Update to pending while checking
     set((state) => ({
-      sites: state.sites.map((s) => (s.id === id ? { ...s, status: 'pending' as const } : s))
+      sites: state.sites.map((s) => (s.id === id ? { ...s, status: 'pending' as const } : s)),
     }))
 
     try {
@@ -158,12 +158,12 @@ export const useSitesStore = create<SitesState>((set, get) => ({
           apiKey: site.apiKey,
           apiSecret: site.apiSecret,
         })
-        
+
         const updates: Partial<WordPressSite> = {
           status: result.status,
           lastSync: new Date().toISOString(),
         }
-        
+
         if (result.status === 'online' && result.data) {
           updates.wpVersion = result.data.wp_version
           updates.phpVersion = result.data.php_version
@@ -171,7 +171,7 @@ export const useSitesStore = create<SitesState>((set, get) => ({
           updates.themeCount = result.data.theme_count
           updates.activeTheme = result.data.active_theme
         }
-        
+
         await get().updateSite(id, updates)
       } else {
         // Fallback: just mark as offline

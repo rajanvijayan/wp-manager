@@ -59,4 +59,3 @@ When using WP Manager:
 We would like to thank the following security researchers for their responsible disclosure:
 
 - (Your name could be here!)
-

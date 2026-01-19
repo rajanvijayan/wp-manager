@@ -1,8 +1,8 @@
 // Script to generate app icons from SVG
 // Run: node scripts/generate-icon.js
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
 // Create a simple 512x512 PNG icon (base64 encoded)
 // This is a placeholder - for production, use proper icon generation tools
@@ -20,26 +20,27 @@ const svgContent = `<svg width="512" height="512" viewBox="0 0 512 512" fill="no
   <circle cx="216" cy="400" r="20" fill="white" opacity="0.9"/>
   <circle cx="288" cy="400" r="20" fill="white" opacity="0.9"/>
   <circle cx="360" cy="400" r="20" fill="white" opacity="0.9"/>
-</svg>`;
+</svg>`
 
-const buildDir = path.join(__dirname, '../build');
+const buildDir = path.join(__dirname, '../build')
 
 // Ensure build directory exists
 if (!fs.existsSync(buildDir)) {
-  fs.mkdirSync(buildDir, { recursive: true });
+  fs.mkdirSync(buildDir, { recursive: true })
 }
 
 // Write SVG file
-fs.writeFileSync(path.join(buildDir, 'icon.svg'), svgContent);
+fs.writeFileSync(path.join(buildDir, 'icon.svg'), svgContent)
 
-console.log('✅ Icon SVG created at build/icon.svg');
-console.log('');
-console.log('To create PNG/ICNS/ICO icons for production:');
-console.log('1. Use an online converter like https://cloudconvert.com/svg-to-png');
-console.log('2. Or use electron-icon-builder: npx electron-icon-builder --input=build/icon.svg --output=build');
-console.log('');
-console.log('Required icon files:');
-console.log('  - build/icon.png (512x512 for Linux)');
-console.log('  - build/icon.icns (for macOS)');
-console.log('  - build/icon.ico (for Windows)');
-
+console.log('✅ Icon SVG created at build/icon.svg')
+console.log('')
+console.log('To create PNG/ICNS/ICO icons for production:')
+console.log('1. Use an online converter like https://cloudconvert.com/svg-to-png')
+console.log(
+  '2. Or use electron-icon-builder: npx electron-icon-builder --input=build/icon.svg --output=build'
+)
+console.log('')
+console.log('Required icon files:')
+console.log('  - build/icon.png (512x512 for Linux)')
+console.log('  - build/icon.icns (for macOS)')
+console.log('  - build/icon.ico (for Windows)')

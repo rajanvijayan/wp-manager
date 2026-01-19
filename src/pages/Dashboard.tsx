@@ -1,13 +1,13 @@
-import { 
-  Globe, 
-  Puzzle, 
-  Palette, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  Globe,
+  Puzzle,
+  Palette,
+  AlertTriangle,
+  CheckCircle,
   Clock,
   ArrowUpRight,
   RefreshCw,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react'
 import { useSitesStore } from '@/store/sitesStore'
 import { useNavigate } from 'react-router-dom'
@@ -26,23 +26,23 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="animate-fade-in space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
+          <h1 className="mb-2 text-3xl font-bold text-white">Dashboard</h1>
           <p className="text-slate-400">
             Welcome back! Here's an overview of your WordPress sites.
           </p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
-          <RefreshCw className="w-4 h-4" />
+        <button className="flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-slate-300 transition-colors hover:bg-white/10">
+          <RefreshCw className="h-4 w-4" />
           Refresh All
         </button>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-4 gap-4 stagger-children">
+      <div className="stagger-children grid grid-cols-4 gap-4">
         <StatCard
           icon={Globe}
           label="Total Sites"
@@ -76,17 +76,17 @@ export default function Dashboard() {
       {/* Main Content Grid */}
       <div className="grid grid-cols-3 gap-6">
         {/* Sites Overview */}
-        <div className="col-span-2 glass rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-6">
+        <div className="glass col-span-2 rounded-2xl p-6">
+          <div className="mb-6 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-white">Your Sites</h2>
-            <button 
+            <button
               onClick={() => navigate('/sites')}
-              className="text-sm text-wp-blue-400 hover:text-wp-blue-300 flex items-center gap-1"
+              className="flex items-center gap-1 text-sm text-wp-blue-400 hover:text-wp-blue-300"
             >
-              View all <ArrowUpRight className="w-4 h-4" />
+              View all <ArrowUpRight className="h-4 w-4" />
             </button>
           </div>
-          
+
           {sites.length === 0 ? (
             <EmptyState />
           ) : (
@@ -101,7 +101,7 @@ export default function Dashboard() {
         {/* Quick Actions */}
         <div className="space-y-6">
           <div className="glass rounded-2xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
+            <h2 className="mb-4 text-xl font-semibold text-white">Quick Actions</h2>
             <div className="space-y-3">
               <QuickAction
                 icon={Globe}
@@ -126,7 +126,7 @@ export default function Dashboard() {
 
           {/* Recent Activity */}
           <div className="glass rounded-2xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">Recent Activity</h2>
+            <h2 className="mb-4 text-xl font-semibold text-white">Recent Activity</h2>
             <div className="space-y-4">
               <ActivityItem
                 icon={CheckCircle}
@@ -154,13 +154,13 @@ export default function Dashboard() {
   )
 }
 
-function StatCard({ 
-  icon: Icon, 
-  label, 
-  value, 
-  trend, 
-  color 
-}: { 
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  trend,
+  color,
+}: {
   icon: any
   label: string
   value: number
@@ -175,14 +175,16 @@ function StatCard({
   }
 
   return (
-    <div className="glass rounded-2xl p-5 hover-lift">
-      <div className={`w-12 h-12 rounded-xl ${bgColors[color]} flex items-center justify-center mb-4`}>
-        <Icon className="w-6 h-6" style={{ color: '#ffffff' }} />
+    <div className="glass hover-lift rounded-2xl p-5">
+      <div
+        className={`h-12 w-12 rounded-xl ${bgColors[color]} mb-4 flex items-center justify-center`}
+      >
+        <Icon className="h-6 w-6" style={{ color: '#ffffff' }} />
       </div>
-      <p className="text-sm text-slate-400 mb-1">{label}</p>
-      <p className="text-3xl font-bold text-white mb-2">{value}</p>
+      <p className="mb-1 text-sm text-slate-400">{label}</p>
+      <p className="mb-2 text-3xl font-bold text-white">{value}</p>
       <div className="flex items-center gap-1 text-xs text-slate-500">
-        <TrendingUp className="w-3 h-3" />
+        <TrendingUp className="h-3 w-3" />
         {trend}
       </div>
     </div>
@@ -198,11 +200,11 @@ function SiteRow({ site }: { site: any }) {
   }
 
   return (
-    <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
-      <div className={`w-3 h-3 rounded-full ${statusColors[site.status]} animate-pulse`} />
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-white truncate">{site.name}</p>
-        <p className="text-sm text-slate-400 truncate">{site.url}</p>
+    <div className="flex cursor-pointer items-center gap-4 rounded-xl bg-white/5 p-4 transition-colors hover:bg-white/10">
+      <div className={`h-3 w-3 rounded-full ${statusColors[site.status]} animate-pulse`} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium text-white">{site.name}</p>
+        <p className="truncate text-sm text-slate-400">{site.url}</p>
       </div>
       <div className="text-right">
         <p className="text-sm text-slate-400">{site.pluginCount || 0} plugins</p>
@@ -214,17 +216,17 @@ function SiteRow({ site }: { site: any }) {
 
 function EmptyState() {
   const navigate = useNavigate()
-  
+
   return (
-    <div className="text-center py-12">
-      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-wp-blue-500/20 to-wp-blue-600/10 flex items-center justify-center">
-        <Globe className="w-8 h-8 text-wp-blue-400" />
+    <div className="py-12 text-center">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-wp-blue-500/20 to-wp-blue-600/10">
+        <Globe className="h-8 w-8 text-wp-blue-400" />
       </div>
-      <h3 className="text-lg font-semibold text-white mb-2">No sites connected</h3>
-      <p className="text-slate-400 mb-4">Get started by adding your first WordPress site</p>
-      <button 
+      <h3 className="mb-2 text-lg font-semibold text-white">No sites connected</h3>
+      <p className="mb-4 text-slate-400">Get started by adding your first WordPress site</p>
+      <button
         onClick={() => navigate('/sites')}
-        className="px-6 py-2 rounded-xl bg-wp-blue-500 text-white font-medium hover:bg-wp-blue-400 transition-colors"
+        className="rounded-xl bg-wp-blue-500 px-6 py-2 font-medium text-white transition-colors hover:bg-wp-blue-400"
       >
         Add Your First Site
       </button>
@@ -232,12 +234,12 @@ function EmptyState() {
   )
 }
 
-function QuickAction({ 
-  icon: Icon, 
-  label, 
-  description, 
-  onClick 
-}: { 
+function QuickAction({
+  icon: Icon,
+  label,
+  description,
+  onClick,
+}: {
   icon: any
   label: string
   description: string
@@ -246,10 +248,10 @@ function QuickAction({
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left"
+      className="flex w-full items-center gap-3 rounded-xl bg-white/5 p-3 text-left transition-colors hover:bg-white/10"
     >
-      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-wp-blue-500 to-wp-blue-600 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-5 h-5" style={{ color: '#ffffff' }} />
+      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-wp-blue-500 to-wp-blue-600">
+        <Icon className="h-5 w-5" style={{ color: '#ffffff' }} />
       </div>
       <div>
         <p className="font-medium text-white">{label}</p>
@@ -259,12 +261,12 @@ function QuickAction({
   )
 }
 
-function ActivityItem({ 
-  icon: Icon, 
-  text, 
-  time, 
-  color 
-}: { 
+function ActivityItem({
+  icon: Icon,
+  text,
+  time,
+  color,
+}: {
   icon: any
   text: string
   time: string
@@ -278,15 +280,14 @@ function ActivityItem({
 
   return (
     <div className="flex items-start gap-3">
-      <Icon className={`w-4 h-4 mt-0.5 ${colors[color]}`} />
+      <Icon className={`mt-0.5 h-4 w-4 ${colors[color]}`} />
       <div>
         <p className="text-sm text-white">{text}</p>
-        <p className="text-xs text-slate-500 flex items-center gap-1">
-          <Clock className="w-3 h-3" />
+        <p className="flex items-center gap-1 text-xs text-slate-500">
+          <Clock className="h-3 w-3" />
           {time}
         </p>
       </div>
     </div>
   )
 }
-

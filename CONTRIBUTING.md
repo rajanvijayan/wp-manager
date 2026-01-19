@@ -172,4 +172,3 @@ wp-manager/
 Feel free to open an issue with your question or reach out to the maintainers.
 
 Thank you for contributing! 🎉
-

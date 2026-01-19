@@ -29,31 +29,37 @@
 ## ✨ Features
 
 ### 🌐 Multi-Site Management
+
 - Connect and manage unlimited WordPress websites from a single dashboard
 - Real-time status monitoring for all your sites
 - Quick access to WordPress admin panels
 
 ### 🔌 Plugin Management
+
 - View all plugins across all your sites
 - Update plugins with one click
 - Identify outdated plugins that need attention
 
 ### 🎨 Theme Management
+
 - Browse themes installed on your sites
 - Update themes easily
 - Activate themes remotely
 
 ### 👤 Client Management
+
 - Store client information for each site
 - Track client contact details (name, email, company, phone)
 - Enable monthly report emails for clients
 
 ### 📊 Dashboard Overview
+
 - Beautiful dashboard with site statistics
 - Quick actions for common tasks
 - Real-time sync status
 
 ### 🌙 Dark & Light Mode
+
 - Beautiful dark mode by default
 - Switch to light mode if preferred
 - Settings persist across sessions
@@ -64,13 +70,13 @@
 
 Download the latest release for your platform:
 
-| Platform | Download |
-|----------|----------|
+| Platform              | Download                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------ |
 | macOS (Apple Silicon) | [WP Manager-x.x.x-arm64.dmg](https://github.com/username/wp-manager/releases/latest) |
-| macOS (Intel) | [WP Manager-x.x.x-x64.dmg](https://github.com/username/wp-manager/releases/latest) |
-| Windows | [WP Manager-x.x.x-setup.exe](https://github.com/username/wp-manager/releases/latest) |
-| Linux (AppImage) | [WP Manager-x.x.x.AppImage](https://github.com/username/wp-manager/releases/latest) |
-| Linux (Debian) | [wp-manager_x.x.x_amd64.deb](https://github.com/username/wp-manager/releases/latest) |
+| macOS (Intel)         | [WP Manager-x.x.x-x64.dmg](https://github.com/username/wp-manager/releases/latest)   |
+| Windows               | [WP Manager-x.x.x-setup.exe](https://github.com/username/wp-manager/releases/latest) |
+| Linux (AppImage)      | [WP Manager-x.x.x.AppImage](https://github.com/username/wp-manager/releases/latest)  |
+| Linux (Debian)        | [wp-manager_x.x.x_amd64.deb](https://github.com/username/wp-manager/releases/latest) |
 
 ### Requirements
 
@@ -127,15 +133,15 @@ npm run dev
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run format` | Format code with Prettier |
-| `npm run format:check` | Check code formatting |
-| `npm run typecheck` | Run TypeScript type checking |
-| `npm run generate:icons` | Generate app icons from SVG |
+| Command                  | Description                              |
+| ------------------------ | ---------------------------------------- |
+| `npm run dev`            | Start development server with hot reload |
+| `npm run build`          | Build for production                     |
+| `npm run preview`        | Preview production build                 |
+| `npm run format`         | Format code with Prettier                |
+| `npm run format:check`   | Check code formatting                    |
+| `npm run typecheck`      | Run TypeScript type checking             |
+| `npm run generate:icons` | Generate app icons from SVG              |
 
 ### Project Structure
 

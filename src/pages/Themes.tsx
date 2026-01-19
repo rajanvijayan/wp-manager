@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
-import { 
-  Palette, 
-  Search, 
+import {
+  Palette,
+  Search,
   RefreshCw,
   CheckCircle,
   ArrowUpCircle,
   Eye,
   Download,
   Globe,
-  Loader2
+  Loader2,
 } from 'lucide-react'
 import { useSitesStore } from '@/store/sitesStore'
 
@@ -32,7 +32,7 @@ export default function Themes() {
   const [updatingThemes, setUpdatingThemes] = useState<Set<string>>(new Set())
   const sites = useSitesStore((state) => state.sites)
 
-  const onlineSites = sites.filter(s => s.status === 'online')
+  const onlineSites = sites.filter((s) => s.status === 'online')
 
   // Fetch themes from sites
   const fetchThemes = async () => {
@@ -81,8 +81,8 @@ export default function Themes() {
     }
   }, [selectedSite, sites])
 
-  const filteredThemes = themes.filter(
-    (theme) => theme.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredThemes = themes.filter((theme) =>
+    theme.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const updatesAvailable = themes.filter((t) => t.hasUpdate).length
@@ -91,10 +91,10 @@ export default function Themes() {
   // Update a single theme
   const updateTheme = async (theme: ThemeInfo) => {
     const key = `${theme.siteId}-${theme.slug}`
-    setUpdatingThemes(prev => new Set(prev).add(key))
+    setUpdatingThemes((prev) => new Set(prev).add(key))
 
     try {
-      const site = sites.find(s => s.id === theme.siteId)
+      const site = sites.find((s) => s.id === theme.siteId)
       if (!site) return
 
       const result = await window.electronAPI.fetchFromSite({
@@ -113,7 +113,7 @@ export default function Themes() {
       console.error('Update failed:', error)
       alert(`Failed to update ${theme.name}`)
     } finally {
-      setUpdatingThemes(prev => {
+      setUpdatingThemes((prev) => {
         const next = new Set(prev)
         next.delete(key)
         return next
@@ -124,10 +124,10 @@ export default function Themes() {
   // Activate a theme
   const activateTheme = async (theme: ThemeInfo) => {
     const key = `${theme.siteId}-${theme.slug}`
-    setUpdatingThemes(prev => new Set(prev).add(key))
+    setUpdatingThemes((prev) => new Set(prev).add(key))
 
     try {
-      const site = sites.find(s => s.id === theme.siteId)
+      const site = sites.find((s) => s.id === theme.siteId)
       if (!site) return
 
       const result = await window.electronAPI.fetchFromSite({
@@ -146,7 +146,7 @@ export default function Themes() {
       console.error('Activation failed:', error)
       alert(`Failed to activate ${theme.name}`)
     } finally {
-      setUpdatingThemes(prev => {
+      setUpdatingThemes((prev) => {
         const next = new Set(prev)
         next.delete(key)
         return next
@@ -156,37 +156,35 @@ export default function Themes() {
 
   // Update all themes
   const updateAllThemes = async () => {
-    const themesToUpdate = themes.filter(t => t.hasUpdate)
+    const themesToUpdate = themes.filter((t) => t.hasUpdate)
     for (const theme of themesToUpdate) {
       await updateTheme(theme)
     }
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="animate-fade-in space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Themes</h1>
-          <p className="text-slate-400">
-            Manage themes across all your WordPress sites
-          </p>
+          <h1 className="mb-2 text-3xl font-bold text-white">Themes</h1>
+          <p className="text-slate-400">Manage themes across all your WordPress sites</p>
         </div>
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={fetchThemes}
             disabled={isLoading}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-slate-300 transition-colors hover:bg-white/10 disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
           </button>
           {updatesAvailable > 0 && (
-            <button 
+            <button
               onClick={updateAllThemes}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-medium hover:from-emerald-400 hover:to-emerald-500 transition-all hover-lift"
+              className="hover-lift flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-2.5 font-medium text-white transition-all hover:from-emerald-400 hover:to-emerald-500"
             >
-              <Download className="w-5 h-5" />
+              <Download className="h-5 w-5" />
               Update All ({updatesAvailable})
             </button>
           )}
@@ -198,22 +196,24 @@ export default function Themes() {
         <select
           value={selectedSite}
           onChange={(e) => setSelectedSite(e.target.value)}
-          className="px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-wp-blue-500 transition-colors min-w-[200px]"
+          className="min-w-[200px] rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white transition-colors focus:border-wp-blue-500 focus:outline-none"
         >
           <option value="all">All Sites</option>
           {sites.map((site) => (
-            <option key={site.id} value={site.id}>{site.name}</option>
+            <option key={site.id} value={site.id}>
+              {site.name}
+            </option>
           ))}
         </select>
-        
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+
+        <div className="relative max-w-md flex-1">
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             placeholder="Search themes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:outline-none focus:border-wp-blue-500 transition-colors"
+            className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-12 pr-4 text-white placeholder-slate-400 transition-colors focus:border-wp-blue-500 focus:outline-none"
           />
         </div>
       </div>
@@ -222,7 +222,12 @@ export default function Themes() {
       <div className="grid grid-cols-4 gap-4">
         <StatCard icon={Palette} label="Total Themes" value={themes.length} color="orange" />
         <StatCard icon={CheckCircle} label="Active" value={activeThemes} color="green" />
-        <StatCard icon={ArrowUpCircle} label="Updates Available" value={updatesAvailable} color="blue" />
+        <StatCard
+          icon={ArrowUpCircle}
+          label="Updates Available"
+          value={updatesAvailable}
+          color="blue"
+        />
         <StatCard icon={Globe} label="Connected Sites" value={onlineSites.length} color="purple" />
       </div>
 
@@ -231,7 +236,7 @@ export default function Themes() {
         <EmptyState message="Connect a WordPress site with the WP Manager plugin to see themes" />
       ) : isLoading ? (
         <div className="glass rounded-2xl p-12 text-center">
-          <Loader2 className="w-10 h-10 text-wp-blue-400 animate-spin mx-auto mb-4" />
+          <Loader2 className="mx-auto mb-4 h-10 w-10 animate-spin text-wp-blue-400" />
           <p className="text-slate-400">Loading themes...</p>
         </div>
       ) : themes.length === 0 ? (
@@ -239,9 +244,9 @@ export default function Themes() {
       ) : (
         <div className="grid grid-cols-3 gap-6">
           {filteredThemes.map((theme, index) => (
-            <ThemeCard 
-              key={`${theme.siteId}-${theme.slug}-${index}`} 
-              theme={theme} 
+            <ThemeCard
+              key={`${theme.siteId}-${theme.slug}-${index}`}
+              theme={theme}
               isUpdating={updatingThemes.has(`${theme.siteId}-${theme.slug}`)}
               onUpdate={() => updateTheme(theme)}
               onActivate={() => activateTheme(theme)}
@@ -253,105 +258,105 @@ export default function Themes() {
   )
 }
 
-function ThemeCard({ 
-  theme, 
-  isUpdating, 
-  onUpdate, 
-  onActivate 
-}: { 
+function ThemeCard({
+  theme,
+  isUpdating,
+  onUpdate,
+  onActivate,
+}: {
   theme: ThemeInfo
   isUpdating: boolean
   onUpdate: () => void
   onActivate: () => void
 }) {
   const [imageError, setImageError] = useState(false)
-  
+
   // Check if screenshot URL is valid
   const hasValidScreenshot = theme.screenshot && !imageError
-  
+
   return (
-    <div className="glass rounded-2xl overflow-hidden hover-lift group">
+    <div className="glass hover-lift group overflow-hidden rounded-2xl">
       {/* Theme preview */}
-      <div className="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 relative overflow-hidden">
+      <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900">
         {hasValidScreenshot ? (
-          <img 
-            src={theme.screenshot} 
-            alt={theme.name} 
-            className="w-full h-full object-cover"
+          <img
+            src={theme.screenshot}
+            alt={theme.name}
+            className="h-full w-full object-cover"
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-            <Palette className="w-12 h-12 text-slate-600" />
-            <span className="text-slate-500 text-sm font-medium">{theme.name}</span>
+          <div className="flex h-full w-full flex-col items-center justify-center gap-2">
+            <Palette className="h-12 w-12 text-slate-600" />
+            <span className="text-sm font-medium text-slate-500">{theme.name}</span>
           </div>
         )}
-        
+
         {/* Overlay on hover */}
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-          <button className="p-3 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors">
-            <Eye className="w-5 h-5" />
+        <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+          <button className="rounded-xl bg-white/20 p-3 text-white transition-colors hover:bg-white/30">
+            <Eye className="h-5 w-5" />
           </button>
         </div>
-        
+
         {/* Active badge */}
         {theme.status === 'active' && (
-          <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-medium">
+          <div className="absolute right-3 top-3 rounded-full bg-emerald-500 px-3 py-1 text-xs font-medium text-white">
             Active
           </div>
         )}
-        
+
         {/* Site badge */}
-        <div className="absolute bottom-3 left-3 px-2 py-1 rounded-lg bg-black/50 text-white text-xs">
+        <div className="absolute bottom-3 left-3 rounded-lg bg-black/50 px-2 py-1 text-xs text-white">
           {theme.siteName}
         </div>
       </div>
-      
+
       {/* Theme info */}
       <div className="p-5">
-        <div className="flex items-start justify-between mb-3">
+        <div className="mb-3 flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white mb-1">{theme.name}</h3>
-            <p className="text-sm text-slate-400 font-mono">v{theme.version}</p>
+            <h3 className="mb-1 text-lg font-semibold text-white">{theme.name}</h3>
+            <p className="font-mono text-sm text-slate-400">v{theme.version}</p>
           </div>
           {theme.hasUpdate && theme.latestVersion && (
-            <span className="px-2 py-1 rounded-lg bg-orange-500/20 text-orange-400 text-xs font-medium">
+            <span className="rounded-lg bg-orange-500/20 px-2 py-1 text-xs font-medium text-orange-400">
               v{theme.latestVersion}
             </span>
           )}
         </div>
-        
+
         {/* Actions */}
         <div className="flex items-center gap-2">
           {theme.hasUpdate ? (
-            <button 
+            <button
               onClick={onUpdate}
               disabled={isUpdating}
-              className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-wp-blue-500 text-white text-sm font-medium hover:bg-wp-blue-400 transition-colors disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-wp-blue-500 py-2 text-sm font-medium text-white transition-colors hover:bg-wp-blue-400 disabled:opacity-50"
             >
               {isUpdating ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Updating...
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4" />
+                  <Download className="h-4 w-4" />
                   Update
                 </>
               )}
             </button>
           ) : (
-            <span className="flex-1 flex items-center justify-center gap-2 py-2 text-sm text-slate-500">
-              <CheckCircle className="w-4 h-4" />
+            <span className="flex flex-1 items-center justify-center gap-2 py-2 text-sm text-slate-500">
+              <CheckCircle className="h-4 w-4" />
               Up to date
             </span>
           )}
           {theme.status !== 'active' && (
-            <button 
+            <button
               onClick={onActivate}
               disabled={isUpdating}
-              className="px-4 py-2 rounded-xl bg-white/5 text-slate-300 text-sm hover:bg-white/10 transition-colors disabled:opacity-50"
+              className="rounded-xl bg-white/5 px-4 py-2 text-sm text-slate-300 transition-colors hover:bg-white/10 disabled:opacity-50"
             >
               Activate
             </button>
@@ -362,12 +367,12 @@ function ThemeCard({
   )
 }
 
-function StatCard({ 
-  icon: Icon, 
-  label, 
-  value, 
-  color 
-}: { 
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  color,
+}: {
   icon: any
   label: string
   value: number
@@ -381,9 +386,9 @@ function StatCard({
   }
 
   return (
-    <div className="glass rounded-xl p-4 flex items-center gap-4">
-      <div className={`w-12 h-12 rounded-xl ${bgColors[color]} flex items-center justify-center`}>
-        <Icon className="w-6 h-6" style={{ color: '#ffffff' }} />
+    <div className="glass flex items-center gap-4 rounded-xl p-4">
+      <div className={`h-12 w-12 rounded-xl ${bgColors[color]} flex items-center justify-center`}>
+        <Icon className="h-6 w-6" style={{ color: '#ffffff' }} />
       </div>
       <div>
         <p className="text-2xl font-bold text-white">{value}</p>
@@ -396,10 +401,10 @@ function StatCard({
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="glass rounded-2xl p-12 text-center">
-      <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
-        <Palette className="w-10 h-10" style={{ color: '#ffffff' }} />
+      <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600">
+        <Palette className="h-10 w-10" style={{ color: '#ffffff' }} />
       </div>
-      <h3 className="text-xl font-semibold text-white mb-2">No themes to display</h3>
+      <h3 className="mb-2 text-xl font-semibold text-white">No themes to display</h3>
       <p className="text-slate-400">{message}</p>
     </div>
   )

@@ -1,7 +1,14 @@
 import { create } from 'zustand'
 
 interface UpdateStatus {
-  status: 'idle' | 'checking' | 'available' | 'not-available' | 'downloading' | 'downloaded' | 'error'
+  status:
+    | 'idle'
+    | 'checking'
+    | 'available'
+    | 'not-available'
+    | 'downloading'
+    | 'downloaded'
+    | 'error'
   version?: string
   releaseNotes?: string | null
   downloadProgress?: number
@@ -13,7 +20,7 @@ interface UpdaterState {
   updateStatus: UpdateStatus
   isChecking: boolean
   isDownloading: boolean
-  
+
   // Actions
   initialize: () => Promise<void>
   checkForUpdates: () => Promise<void>
@@ -39,51 +46,51 @@ export const useUpdaterStore = create<UpdaterState>((set, get) => ({
       if (window.electronAPI?.onUpdateStatus) {
         window.electronAPI.onUpdateStatus((status) => {
           console.log('[Updater] Status update:', status)
-          
+
           switch (status.status) {
             case 'checking':
               set({ isChecking: true, updateStatus: { status: 'checking' } })
               break
             case 'available':
-              set({ 
-                isChecking: false, 
-                updateStatus: { 
-                  status: 'available', 
+              set({
+                isChecking: false,
+                updateStatus: {
+                  status: 'available',
                   version: status.data?.version,
                   releaseNotes: status.data?.releaseNotes as string | null,
-                } 
+                },
               })
               break
             case 'not-available':
-              set({ 
-                isChecking: false, 
-                updateStatus: { status: 'not-available', version: status.data?.version } 
+              set({
+                isChecking: false,
+                updateStatus: { status: 'not-available', version: status.data?.version },
               })
               break
             case 'downloading':
-              set({ 
-                isDownloading: true, 
-                updateStatus: { 
-                  status: 'downloading', 
-                  downloadProgress: status.data?.percent 
-                } 
+              set({
+                isDownloading: true,
+                updateStatus: {
+                  status: 'downloading',
+                  downloadProgress: status.data?.percent,
+                },
               })
               break
             case 'downloaded':
-              set({ 
-                isDownloading: false, 
-                updateStatus: { 
-                  status: 'downloaded', 
+              set({
+                isDownloading: false,
+                updateStatus: {
+                  status: 'downloaded',
                   version: status.data?.version,
                   releaseNotes: status.data?.releaseNotes as string | null,
-                } 
+                },
               })
               break
             case 'error':
-              set({ 
-                isChecking: false, 
-                isDownloading: false, 
-                updateStatus: { status: 'error', error: status.data?.message } 
+              set({
+                isChecking: false,
+                isDownloading: false,
+                updateStatus: { status: 'error', error: status.data?.message },
               })
               break
           }
@@ -100,7 +107,7 @@ export const useUpdaterStore = create<UpdaterState>((set, get) => ({
               version: status.updateVersion || undefined,
               releaseNotes: status.releaseNotes,
               downloadProgress: status.downloadProgress,
-            }
+            },
           })
         }
       }
@@ -112,27 +119,27 @@ export const useUpdaterStore = create<UpdaterState>((set, get) => ({
   checkForUpdates: async () => {
     try {
       set({ isChecking: true, updateStatus: { status: 'checking' } })
-      
+
       if (window.electronAPI?.updaterCheck) {
         const result = await window.electronAPI.updaterCheck()
-        
+
         if (result.status === 'dev-mode') {
-          set({ 
-            isChecking: false, 
-            updateStatus: { status: 'not-available', error: result.message } 
+          set({
+            isChecking: false,
+            updateStatus: { status: 'not-available', error: result.message },
           })
         } else if (result.status === 'error') {
-          set({ 
-            isChecking: false, 
-            updateStatus: { status: 'error', error: result.message } 
+          set({
+            isChecking: false,
+            updateStatus: { status: 'error', error: result.message },
           })
         }
         // Other statuses will be handled by the event listener
       }
     } catch (error: any) {
-      set({ 
-        isChecking: false, 
-        updateStatus: { status: 'error', error: error.message } 
+      set({
+        isChecking: false,
+        updateStatus: { status: 'error', error: error.message },
       })
     }
   },
@@ -140,14 +147,14 @@ export const useUpdaterStore = create<UpdaterState>((set, get) => ({
   downloadUpdate: async () => {
     try {
       set({ isDownloading: true })
-      
+
       if (window.electronAPI?.updaterDownload) {
         await window.electronAPI.updaterDownload()
       }
     } catch (error: any) {
-      set({ 
-        isDownloading: false, 
-        updateStatus: { status: 'error', error: error.message } 
+      set({
+        isDownloading: false,
+        updateStatus: { status: 'error', error: error.message },
       })
     }
   },
@@ -166,4 +173,3 @@ export const useUpdaterStore = create<UpdaterState>((set, get) => ({
     set({ updateStatus: status })
   },
 }))
-

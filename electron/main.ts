@@ -53,12 +53,12 @@ function createWindow() {
   try {
     // In development, __dirname is dist-electron, so we go up one level to find build/
     // In production, the path will be different
-    const iconPath = isDev 
+    const iconPath = isDev
       ? path.join(__dirname, '../build/icon.png')
       : path.join(process.resourcesPath || __dirname, 'icon.png')
-    
+
     console.log('[WP Manager] Loading icon from:', iconPath)
-    
+
     if (require('fs').existsSync(iconPath)) {
       icon = nativeImage.createFromPath(iconPath)
       if (!icon.isEmpty()) {
@@ -158,11 +158,11 @@ app.on('activate', () => {
 
 // Helper function to make HTTP requests using Electron's net module (no CORS)
 async function fetchUrl(
-  url: string, 
-  options: { 
+  url: string,
+  options: {
     method?: string
     headers?: Record<string, string>
-    body?: any 
+    body?: any
   } = {}
 ): Promise<{ ok: boolean; status: number; data: any }> {
   return new Promise((resolve) => {
@@ -171,26 +171,26 @@ async function fetchUrl(
         url,
         method: options.method || 'GET',
       })
-      
+
       // Set headers
       if (options.headers) {
         Object.entries(options.headers).forEach(([key, value]) => {
           request.setHeader(key, value)
         })
       }
-      
+
       // Set content type for POST requests
       if (options.method === 'POST') {
         request.setHeader('Content-Type', 'application/json')
       }
-      
+
       let responseData = ''
-      
+
       request.on('response', (response) => {
         response.on('data', (chunk) => {
           responseData += chunk.toString()
         })
-        
+
         response.on('end', () => {
           let data = null
           try {
@@ -201,21 +201,21 @@ async function fetchUrl(
           resolve({
             ok: response.statusCode >= 200 && response.statusCode < 300,
             status: response.statusCode,
-            data
+            data,
           })
         })
       })
-      
+
       request.on('error', (error) => {
         console.error('Request error:', error)
         resolve({ ok: false, status: 0, data: null })
       })
-      
+
       // Send body for POST requests
       if (options.body && options.method === 'POST') {
         request.write(JSON.stringify(options.body))
       }
-      
+
       request.end()
     } catch (error) {
       console.error('Fetch error:', error)
@@ -275,7 +275,7 @@ ipcMain.handle('fetch-from-site', async (_, { url, method = 'GET', apiKey, apiSe
         'X-WP-Manager-Key': apiKey,
         'X-WP-Manager-Secret': apiSecret,
       },
-      body
+      body,
     })
     return result
   } catch (error) {
@@ -289,19 +289,19 @@ ipcMain.handle('check-site-status', async (_, { url, apiKey, apiSecret }) => {
   try {
     // First check if basic WordPress REST API is available
     const basicResult = await fetchUrl(`${url}/wp-json/`)
-    
+
     if (!basicResult.ok) {
       return { status: 'offline', data: null }
     }
-    
+
     // Site is reachable, now try our plugin endpoint
     const pluginResult = await fetchUrl(`${url}/wp-json/wp-manager/v1/status`, {
       headers: {
         'X-WP-Manager-Key': apiKey,
         'X-WP-Manager-Secret': apiSecret,
-      }
+      },
     })
-    
+
     if (pluginResult.ok) {
       return { status: 'online', data: pluginResult.data }
     } else if (pluginResult.status === 404) {
@@ -428,21 +428,24 @@ autoUpdater.on('update-downloaded', (info: UpdateInfo) => {
     version: info.version,
     releaseNotes: info.releaseNotes,
   })
-  
+
   // Show notification to user
   if (mainWindow) {
-    dialog.showMessageBox(mainWindow, {
-      type: 'info',
-      title: 'Update Ready',
-      message: `Version ${info.version} has been downloaded.`,
-      detail: 'The update will be installed when you restart the app. Would you like to restart now?',
-      buttons: ['Restart Now', 'Later'],
-      defaultId: 0,
-    }).then(({ response }) => {
-      if (response === 0) {
-        autoUpdater.quitAndInstall(false, true)
-      }
-    })
+    dialog
+      .showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'Update Ready',
+        message: `Version ${info.version} has been downloaded.`,
+        detail:
+          'The update will be installed when you restart the app. Would you like to restart now?',
+        buttons: ['Restart Now', 'Later'],
+        defaultId: 0,
+      })
+      .then(({ response }) => {
+        if (response === 0) {
+          autoUpdater.quitAndInstall(false, true)
+        }
+      })
   }
 })
 
@@ -460,13 +463,16 @@ app.whenReady().then(() => {
         console.error('[WP Manager] Failed to check for updates:', err)
       })
     }, 3000)
-    
+
     // Check for updates every 4 hours
-    setInterval(() => {
-      autoUpdater.checkForUpdates().catch((err) => {
-        console.error('[WP Manager] Failed to check for updates:', err)
-      })
-    }, 4 * 60 * 60 * 1000)
+    setInterval(
+      () => {
+        autoUpdater.checkForUpdates().catch((err) => {
+          console.error('[WP Manager] Failed to check for updates:', err)
+        })
+      },
+      4 * 60 * 60 * 1000
+    )
   }
 })
 
@@ -477,7 +483,7 @@ ipcMain.handle('updater-check', async () => {
       return { status: 'dev-mode', message: 'Updates are disabled in development mode' }
     }
     const result = await autoUpdater.checkForUpdates()
-    return { 
+    return {
       status: 'checked',
       updateAvailable: result?.updateInfo ? true : false,
       version: result?.updateInfo?.version,

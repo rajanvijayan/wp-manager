@@ -71,45 +71,57 @@ export interface UpdaterStatus {
 contextBridge.exposeInMainWorld('electronAPI', {
   // Site management
   getSites: (): Promise<WordPressSite[]> => ipcRenderer.invoke('get-sites'),
-  addSite: (site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>): Promise<WordPressSite> => 
+  addSite: (site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>): Promise<WordPressSite> =>
     ipcRenderer.invoke('add-site', site),
-  updateSite: (id: string, updates: Partial<WordPressSite>): Promise<WordPressSite | null> => 
+  updateSite: (id: string, updates: Partial<WordPressSite>): Promise<WordPressSite | null> =>
     ipcRenderer.invoke('update-site', { id, updates }),
-  deleteSite: (id: string): Promise<boolean> => 
-    ipcRenderer.invoke('delete-site', id),
-  
+  deleteSite: (id: string): Promise<boolean> => ipcRenderer.invoke('delete-site', id),
+
   // Check site status (CORS-free from main process)
-  checkSiteStatus: (params: { url: string; apiKey: string; apiSecret: string }): Promise<SiteStatusResult> =>
-    ipcRenderer.invoke('check-site-status', params),
-  
+  checkSiteStatus: (params: {
+    url: string
+    apiKey: string
+    apiSecret: string
+  }): Promise<SiteStatusResult> => ipcRenderer.invoke('check-site-status', params),
+
   // Generic fetch from site (CORS-free)
-  fetchFromSite: (params: { url: string; method?: string; apiKey: string; apiSecret: string; body?: any }): Promise<{ ok: boolean; status: number; data: any }> =>
+  fetchFromSite: (params: {
+    url: string
+    method?: string
+    apiKey: string
+    apiSecret: string
+    body?: any
+  }): Promise<{ ok: boolean; status: number; data: any }> =>
     ipcRenderer.invoke('fetch-from-site', params),
-  
+
   // Window controls
   minimizeWindow: () => ipcRenderer.invoke('window-minimize'),
   maximizeWindow: () => ipcRenderer.invoke('window-maximize'),
   closeWindow: () => ipcRenderer.invoke('window-close'),
   isMaximized: (): Promise<boolean> => ipcRenderer.invoke('is-maximized'),
-  
+
   // Settings
   getSettings: (): Promise<AppSettings> => ipcRenderer.invoke('get-settings'),
-  saveSettings: (settings: AppSettings): Promise<AppSettings> => ipcRenderer.invoke('save-settings', settings),
+  saveSettings: (settings: AppSettings): Promise<AppSettings> =>
+    ipcRenderer.invoke('save-settings', settings),
   getSetting: (key: string): Promise<any> => ipcRenderer.invoke('get-setting', key),
-  saveSetting: (key: string, value: any): Promise<AppSettings> => ipcRenderer.invoke('save-setting', { key, value }),
-  
+  saveSetting: (key: string, value: any): Promise<AppSettings> =>
+    ipcRenderer.invoke('save-setting', { key, value }),
+
   // Auto-updater
-  updaterCheck: (): Promise<{ status: string; updateAvailable?: boolean; version?: string; message?: string }> => 
-    ipcRenderer.invoke('updater-check'),
-  updaterDownload: (): Promise<{ status: string; message?: string }> => 
+  updaterCheck: (): Promise<{
+    status: string
+    updateAvailable?: boolean
+    version?: string
+    message?: string
+  }> => ipcRenderer.invoke('updater-check'),
+  updaterDownload: (): Promise<{ status: string; message?: string }> =>
     ipcRenderer.invoke('updater-download'),
-  updaterInstall: (): Promise<{ status: string; message?: string }> => 
+  updaterInstall: (): Promise<{ status: string; message?: string }> =>
     ipcRenderer.invoke('updater-install'),
-  updaterGetStatus: (): Promise<UpdaterStatus> => 
-    ipcRenderer.invoke('updater-get-status'),
-  getAppVersion: (): Promise<string> => 
-    ipcRenderer.invoke('get-app-version'),
-  
+  updaterGetStatus: (): Promise<UpdaterStatus> => ipcRenderer.invoke('updater-get-status'),
+  getAppVersion: (): Promise<string> => ipcRenderer.invoke('get-app-version'),
+
   // Listen for update events from main process
   onUpdateStatus: (callback: (status: UpdateStatus) => void) => {
     const handler = (_event: any, status: UpdateStatus) => callback(status)
@@ -126,8 +138,18 @@ declare global {
       addSite: (site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>) => Promise<WordPressSite>
       updateSite: (id: string, updates: Partial<WordPressSite>) => Promise<WordPressSite | null>
       deleteSite: (id: string) => Promise<boolean>
-      checkSiteStatus: (params: { url: string; apiKey: string; apiSecret: string }) => Promise<SiteStatusResult>
-      fetchFromSite: (params: { url: string; method?: string; apiKey: string; apiSecret: string; body?: any }) => Promise<{ ok: boolean; status: number; data: any }>
+      checkSiteStatus: (params: {
+        url: string
+        apiKey: string
+        apiSecret: string
+      }) => Promise<SiteStatusResult>
+      fetchFromSite: (params: {
+        url: string
+        method?: string
+        apiKey: string
+        apiSecret: string
+        body?: any
+      }) => Promise<{ ok: boolean; status: number; data: any }>
       minimizeWindow: () => void
       maximizeWindow: () => void
       closeWindow: () => void
@@ -137,7 +159,12 @@ declare global {
       getSetting: (key: string) => Promise<any>
       saveSetting: (key: string, value: any) => Promise<AppSettings>
       // Auto-updater
-      updaterCheck: () => Promise<{ status: string; updateAvailable?: boolean; version?: string; message?: string }>
+      updaterCheck: () => Promise<{
+        status: string
+        updateAvailable?: boolean
+        version?: string
+        message?: string
+      }>
       updaterDownload: () => Promise<{ status: string; message?: string }>
       updaterInstall: () => Promise<{ status: string; message?: string }>
       updaterGetStatus: () => Promise<UpdaterStatus>

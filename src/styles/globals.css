@@ -75,7 +75,9 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-secondary);
   overflow: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 /* Title bar drag region */
@@ -113,16 +115,19 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   .border-glow {
-    box-shadow: 0 0 20px rgba(0, 115, 170, 0.15),
-                inset 0 0 20px rgba(0, 115, 170, 0.05);
+    box-shadow:
+      0 0 20px rgba(0, 115, 170, 0.15),
+      inset 0 0 20px rgba(0, 115, 170, 0.05);
   }
-  
+
   .hover-lift {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
   }
-  
+
   .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 40px rgba(0, 115, 170, 0.2);
@@ -135,14 +140,30 @@ body {
   opacity: 0;
 }
 
-.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
-.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
-.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.stagger-children > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.stagger-children > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.stagger-children > *:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.stagger-children > *:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.stagger-children > *:nth-child(6) {
+  animation-delay: 0.3s;
+}
+.stagger-children > *:nth-child(7) {
+  animation-delay: 0.35s;
+}
+.stagger-children > *:nth-child(8) {
+  animation-delay: 0.4s;
+}
 
 @keyframes slideUp {
   from {
@@ -331,7 +352,7 @@ body {
 }
 
 /* Dropdown menus */
-.light-mode [class*="rounded-xl"].glass {
+.light-mode [class*='rounded-xl'].glass {
   background-color: var(--bg-card-solid) !important;
 }
 
@@ -341,15 +362,15 @@ body {
 }
 
 /* Force white text on all blue buttons */
-.light-mode [class*="from-wp-blue"] {
+.light-mode [class*='from-wp-blue'] {
   color: #ffffff !important;
 }
 
-.light-mode [class*="bg-wp-blue-500"] {
+.light-mode [class*='bg-wp-blue-500'] {
   color: #ffffff !important;
 }
 
-.light-mode [class*="from-emerald"] {
+.light-mode [class*='from-emerald'] {
   color: #ffffff !important;
 }
 
@@ -369,12 +390,12 @@ body {
 }
 
 /* Make action buttons more visible */
-.light-mode button[class*="bg-wp-blue-500\/20"] {
+.light-mode button[class*='bg-wp-blue-500\/20'] {
   background-color: #0073aa !important;
   color: #ffffff !important;
 }
 
-.light-mode button[class*="bg-wp-blue-500\/20"]:hover {
+.light-mode button[class*='bg-wp-blue-500\/20']:hover {
   background-color: #005c8a !important;
 }
 
@@ -425,17 +446,17 @@ body {
 }
 
 /* Ensure inline style white icons stay white */
-.light-mode svg[style*="color: rgb(255, 255, 255)"],
-.light-mode svg[style*="color:#ffffff"],
-.light-mode svg[style*="color: #ffffff"] {
+.light-mode svg[style*='color: rgb(255, 255, 255)'],
+.light-mode svg[style*='color:#ffffff'],
+.light-mode svg[style*='color: #ffffff'] {
   color: #ffffff !important;
 }
 
 /* All icons inside gradient backgrounds should be white */
-.light-mode [class*="from-wp-blue"] svg,
-.light-mode [class*="from-emerald"] svg,
-.light-mode [class*="from-violet"] svg,
-.light-mode [class*="from-orange"] svg {
+.light-mode [class*='from-wp-blue'] svg,
+.light-mode [class*='from-emerald'] svg,
+.light-mode [class*='from-violet'] svg,
+.light-mode [class*='from-orange'] svg {
   color: #ffffff !important;
 }
 
@@ -449,7 +470,7 @@ body {
 }
 
 .light-mode nav a.text-wp-blue-400 svg,
-.light-mode nav a[class*="bg-wp-blue"] svg {
+.light-mode nav a[class*='bg-wp-blue'] svg {
   color: #0073aa !important;
 }
 
@@ -475,7 +496,7 @@ body {
 
 /* Active navigation item */
 .light-mode nav a.text-wp-blue-400,
-.light-mode nav a[class*="bg-wp-blue"] {
+.light-mode nav a[class*='bg-wp-blue'] {
   color: #004d73 !important;
   background-color: rgba(0, 115, 170, 0.12) !important;
 }

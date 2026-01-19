@@ -51,7 +51,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="h-screen flex flex-col bg-slate-950 overflow-hidden">
+      <div className="flex h-screen flex-col overflow-hidden bg-slate-950">
         <TitleBar />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar />
@@ -72,14 +72,14 @@ function App() {
 
 function LoadingScreen() {
   return (
-    <div className="h-screen flex items-center justify-center bg-slate-950">
+    <div className="flex h-screen items-center justify-center bg-slate-950">
       <div className="text-center">
         <div className="relative">
-          <div className="w-24 h-24 mx-auto mb-6 animate-pulse-slow">
+          <div className="mx-auto mb-6 h-24 w-24 animate-pulse-slow">
             <AppIcon size={96} />
           </div>
-          <h1 className="text-2xl font-semibold text-gradient mb-2">WP Manager</h1>
-          <p className="text-slate-500 text-sm">Loading your sites...</p>
+          <h1 className="text-gradient mb-2 text-2xl font-semibold">WP Manager</h1>
+          <p className="text-sm text-slate-500">Loading your sites...</p>
         </div>
       </div>
     </div>
@@ -88,15 +88,25 @@ function LoadingScreen() {
 
 function ErrorScreen({ message }: { message: string }) {
   return (
-    <div className="h-screen flex items-center justify-center bg-slate-950">
+    <div className="flex h-screen items-center justify-center bg-slate-950">
       <div className="text-center">
-        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center">
-          <svg className="w-10 h-10 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-500/20">
+          <svg
+            className="h-10 w-10 text-red-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
           </svg>
         </div>
-        <h1 className="text-2xl font-semibold text-white mb-2">Something went wrong</h1>
-        <p className="text-slate-400 text-sm">{message}</p>
+        <h1 className="mb-2 text-2xl font-semibold text-white">Something went wrong</h1>
+        <p className="text-sm text-slate-400">{message}</p>
       </div>
     </div>
   )

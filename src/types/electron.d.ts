@@ -35,8 +35,18 @@ declare global {
       addSite: (site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>) => Promise<WordPressSite>
       updateSite: (id: string, updates: Partial<WordPressSite>) => Promise<WordPressSite | null>
       deleteSite: (id: string) => Promise<boolean>
-      checkSiteStatus: (params: { url: string; apiKey: string; apiSecret: string }) => Promise<SiteStatusResult>
-      fetchFromSite: (params: { url: string; method?: string; apiKey: string; apiSecret: string; body?: any }) => Promise<{ ok: boolean; status: number; data: any }>
+      checkSiteStatus: (params: {
+        url: string
+        apiKey: string
+        apiSecret: string
+      }) => Promise<SiteStatusResult>
+      fetchFromSite: (params: {
+        url: string
+        method?: string
+        apiKey: string
+        apiSecret: string
+        body?: any
+      }) => Promise<{ ok: boolean; status: number; data: any }>
       minimizeWindow: () => void
       maximizeWindow: () => void
       closeWindow: () => void

@@ -25,11 +25,11 @@ export default defineConfig({
             rollupOptions: {
               external: ['electron', 'electron-store'],
               output: {
-                format: 'cjs'
-              }
-            }
-          }
-        }
+                format: 'cjs',
+              },
+            },
+          },
+        },
       },
       {
         entry: 'electron/preload.ts',
@@ -42,21 +42,21 @@ export default defineConfig({
             outDir: 'dist-electron',
             rollupOptions: {
               output: {
-                format: 'cjs'
-              }
-            }
-          }
-        }
-      }
+                format: 'cjs',
+              },
+            },
+          },
+        },
+      },
     ]),
-    renderer()
+    renderer(),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
-    }
+      '@': path.resolve(__dirname, './src'),
+    },
   },
   build: {
-    outDir: 'dist'
-  }
+    outDir: 'dist',
+  },
 })

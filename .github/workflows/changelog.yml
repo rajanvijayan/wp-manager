@@ -35,4 +35,3 @@ jobs:
           git add CHANGELOG.md
           git diff --staged --quiet || git commit -m "docs: update changelog"
           git push
-

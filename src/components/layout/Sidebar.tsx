@@ -1,13 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { 
-  LayoutDashboard, 
-  Globe, 
-  Puzzle, 
-  Palette, 
-  Settings,
-  Plus,
-  Zap
-} from 'lucide-react'
+import { LayoutDashboard, Globe, Puzzle, Palette, Settings, Plus, Zap } from 'lucide-react'
 import { useSitesStore } from '@/store/sitesStore'
 
 const navItems = [
@@ -24,16 +16,16 @@ export default function Sidebar() {
   const onlineSites = sites.filter((s) => s.status === 'online').length
 
   return (
-    <aside className="w-64 bg-slate-925/50 border-r border-white/5 flex flex-col">
+    <aside className="flex w-64 flex-col border-r border-white/5 bg-slate-925/50">
       {/* Sites summary */}
-      <div className="p-4 border-b border-white/5">
+      <div className="border-b border-white/5 p-4">
         <div className="glass-light rounded-xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
               Connected Sites
             </span>
             <div className="flex items-center gap-1">
-              <Zap className="w-3 h-3 text-emerald-400" />
+              <Zap className="h-3 w-3 text-emerald-400" />
               <span className="text-xs text-emerald-400">{onlineSites} online</span>
             </div>
           </div>
@@ -45,25 +37,23 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="flex-1 space-y-1 p-3">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path
           return (
             <NavLink
               key={item.path}
               to={item.path}
-              className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                ${isActive 
-                  ? 'bg-wp-blue-500/20 text-wp-blue-400 border-glow' 
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }
-              `}
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
+                isActive
+                  ? 'border-glow bg-wp-blue-500/20 text-wp-blue-400'
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
+              } `}
             >
-              <item.icon className={`w-5 h-5 ${isActive ? 'text-wp-blue-400' : ''}`} />
+              <item.icon className={`h-5 w-5 ${isActive ? 'text-wp-blue-400' : ''}`} />
               <span className="font-medium">{item.label}</span>
               {isActive && (
-                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-wp-blue-400 animate-pulse" />
+                <div className="ml-auto h-1.5 w-1.5 animate-pulse rounded-full bg-wp-blue-400" />
               )}
             </NavLink>
           )
@@ -71,12 +61,12 @@ export default function Sidebar() {
       </nav>
 
       {/* Quick add button */}
-      <div className="p-4 border-t border-white/5">
+      <div className="border-t border-white/5 p-4">
         <NavLink
           to="/sites"
-          className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-wp-blue-500 to-wp-blue-600 text-white font-medium hover:from-wp-blue-400 hover:to-wp-blue-500 transition-all duration-200 hover-lift"
+          className="hover-lift flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-wp-blue-500 to-wp-blue-600 py-3 font-medium text-white transition-all duration-200 hover:from-wp-blue-400 hover:to-wp-blue-500"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="h-5 w-5" />
           Add New Site
         </NavLink>
       </div>
@@ -90,4 +80,3 @@ export default function Sidebar() {
     </aside>
   )
 }
-

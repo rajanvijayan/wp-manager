@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -20,20 +17,20 @@ export default {
           800: '#002e4a',
           900: '#00172a',
         },
-        'slate': {
+        slate: {
           850: '#162032',
           925: '#0d1520',
           950: '#080c14',
-        }
+        },
       },
       fontFamily: {
-        'display': ['Cal Sans', 'Inter', 'system-ui', 'sans-serif'],
-        'mono': ['JetBrains Mono', 'Fira Code', 'monospace'],
+        display: ['Cal Sans', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'float': 'float 6s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite alternate',
+        float: 'float 6s ease-in-out infinite',
+        glow: 'glow 2s ease-in-out infinite alternate',
         'slide-up': 'slideUp 0.5s ease-out',
         'slide-down': 'slideDown 0.3s ease-out',
         'fade-in': 'fadeIn 0.4s ease-out',
@@ -62,9 +59,8 @@ export default {
       },
       backdropBlur: {
         xs: '2px',
-      }
+      },
     },
   },
   plugins: [],
 }
-
