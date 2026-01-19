@@ -55,13 +55,8 @@ declare global {
   interface Window {
     electronAPI: {
       getSites: () => Promise<WordPressSite[]>
-      addSite: (
-        site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>
-      ) => Promise<WordPressSite>
-      updateSite: (
-        id: string,
-        updates: Partial<WordPressSite>
-      ) => Promise<WordPressSite | null>
+      addSite: (site: Omit<WordPressSite, 'id' | 'createdAt' | 'status'>) => Promise<WordPressSite>
+      updateSite: (id: string, updates: Partial<WordPressSite>) => Promise<WordPressSite | null>
       deleteSite: (id: string) => Promise<boolean>
       checkSiteStatus: (params: {
         url: string
