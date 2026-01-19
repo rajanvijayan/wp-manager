@@ -1,0 +1,496 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme Variables - Dark Mode (Default) */
+:root {
+  --bg-primary: #080c14;
+  --bg-secondary: #0d1520;
+  --bg-tertiary: #162032;
+  --bg-card: rgba(13, 21, 32, 0.7);
+  --bg-card-solid: #0d1520;
+  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-input: rgba(255, 255, 255, 0.05);
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border-color: rgba(255, 255, 255, 0.05);
+  --border-hover: rgba(255, 255, 255, 0.1);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Light Mode */
+.light-mode {
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e2e8f0;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --bg-card-solid: #ffffff;
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --bg-input: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-hover: rgba(0, 0, 0, 0.12);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 115, 170, 0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 115, 170, 0.6);
+}
+
+/* Selection color */
+::selection {
+  background: rgba(0, 115, 170, 0.3);
+  color: var(--text-primary);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Base styles */
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  overflow: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Title bar drag region */
+.titlebar-drag-region {
+  -webkit-app-region: drag;
+}
+
+.titlebar-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* Theme-aware glass effect */
+.glass {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.glass-light {
+  background: var(--bg-tertiary);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-hover);
+  transition: all 0.3s ease;
+}
+
+/* Glassmorphism utilities */
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #0073aa 0%, #00a0d2 50%, #0073aa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .border-glow {
+    box-shadow: 0 0 20px rgba(0, 115, 170, 0.15),
+                inset 0 0 20px rgba(0, 115, 170, 0.05);
+  }
+  
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(0, 115, 170, 0.2);
+  }
+}
+
+/* Animation for staggered children */
+.stagger-children > * {
+  animation: slideUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================== LIGHT MODE OVERRIDES ==================== */
+
+/* Main backgrounds */
+.light-mode .bg-slate-950 {
+  background-color: var(--bg-primary) !important;
+}
+
+.light-mode .bg-slate-925\/50,
+.light-mode .bg-slate-925\/80 {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Text colors */
+.light-mode .text-white {
+  color: var(--text-primary) !important;
+}
+
+.light-mode .text-slate-300 {
+  color: var(--text-secondary) !important;
+}
+
+.light-mode .text-slate-400 {
+  color: var(--text-muted) !important;
+}
+
+.light-mode .text-slate-500 {
+  color: var(--text-muted) !important;
+}
+
+.light-mode .text-slate-600 {
+  color: var(--text-dim) !important;
+}
+
+/* Borders */
+.light-mode .border-white\/5 {
+  border-color: var(--border-color) !important;
+}
+
+.light-mode .border-white\/10 {
+  border-color: var(--border-hover) !important;
+}
+
+/* Backgrounds with opacity */
+.light-mode .bg-white\/5 {
+  background-color: var(--bg-hover) !important;
+}
+
+.light-mode .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.light-mode .hover\:bg-white\/5:hover {
+  background-color: var(--bg-hover) !important;
+}
+
+.light-mode .hover\:bg-white\/10:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Form elements */
+.light-mode input,
+.light-mode select,
+.light-mode textarea {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: var(--text-dim) !important;
+}
+
+.light-mode input:focus,
+.light-mode select:focus,
+.light-mode textarea:focus {
+  border-color: #0073aa !important;
+}
+
+/* Sidebar specific */
+.light-mode aside {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Title bar */
+.light-mode header {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Cards and panels */
+.light-mode .glass {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+.light-mode .glass-light {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--border-hover) !important;
+}
+
+/* Specific color overrides for WP blue areas */
+.light-mode .bg-wp-blue-500\/20 {
+  background-color: rgba(0, 115, 170, 0.15) !important;
+}
+
+.light-mode .bg-wp-blue-500\/10 {
+  background-color: rgba(0, 115, 170, 0.1) !important;
+}
+
+/* Status colors should remain vibrant */
+.light-mode .text-emerald-400 {
+  color: #059669 !important;
+}
+
+.light-mode .text-red-400 {
+  color: #dc2626 !important;
+}
+
+.light-mode .text-yellow-400 {
+  color: #d97706 !important;
+}
+
+.light-mode .text-orange-400 {
+  color: #ea580c !important;
+}
+
+.light-mode .text-wp-blue-400 {
+  color: #0073aa !important;
+}
+
+/* Gradient buttons should keep their colors and white text */
+.light-mode .from-wp-blue-500 {
+  --tw-gradient-from: #0073aa !important;
+}
+
+.light-mode .to-wp-blue-600 {
+  --tw-gradient-to: #005c8a !important;
+}
+
+/* Keep button text white in light mode */
+.light-mode .bg-gradient-to-r.from-wp-blue-500 {
+  color: #ffffff !important;
+}
+
+.light-mode .bg-gradient-to-r.from-wp-blue-500 .text-white,
+.light-mode .bg-gradient-to-r.from-wp-blue-500 svg {
+  color: #ffffff !important;
+}
+
+.light-mode .bg-wp-blue-500,
+.light-mode .bg-gradient-to-r {
+  color: #ffffff !important;
+}
+
+.light-mode button.from-wp-blue-500,
+.light-mode a.from-wp-blue-500 {
+  color: #ffffff !important;
+}
+
+/* Table rows */
+.light-mode tr:hover {
+  background-color: var(--bg-hover) !important;
+}
+
+.light-mode .divide-white\/5 > * + * {
+  border-color: var(--border-color) !important;
+}
+
+/* Modal backdrop */
+.light-mode .bg-black\/60 {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Dropdown menus */
+.light-mode [class*="rounded-xl"].glass {
+  background-color: var(--bg-card-solid) !important;
+}
+
+/* Toggle switches - keep dark track in light mode for contrast */
+.light-mode .bg-slate-700 {
+  background-color: #cbd5e1 !important;
+}
+
+/* Force white text on all blue buttons */
+.light-mode [class*="from-wp-blue"] {
+  color: #ffffff !important;
+}
+
+.light-mode [class*="bg-wp-blue-500"] {
+  color: #ffffff !important;
+}
+
+.light-mode [class*="from-emerald"] {
+  color: #ffffff !important;
+}
+
+/* Update button styling in light mode */
+.light-mode .bg-wp-blue-500\/20 {
+  background-color: #0073aa !important;
+  color: #ffffff !important;
+}
+
+.light-mode .text-wp-blue-400 {
+  color: #0073aa !important;
+}
+
+.light-mode button.text-wp-blue-400,
+.light-mode a.text-wp-blue-400 {
+  color: #0073aa !important;
+}
+
+/* Make action buttons more visible */
+.light-mode button[class*="bg-wp-blue-500\/20"] {
+  background-color: #0073aa !important;
+  color: #ffffff !important;
+}
+
+.light-mode button[class*="bg-wp-blue-500\/20"]:hover {
+  background-color: #005c8a !important;
+}
+
+/* Fix icon visibility in light mode */
+.light-mode .bg-wp-blue-500\/20 {
+  background-color: rgba(0, 115, 170, 0.15) !important;
+}
+
+.light-mode .bg-wp-blue-500\/20 svg {
+  color: #0073aa !important;
+}
+
+.light-mode div.bg-wp-blue-500\/20 {
+  background-color: rgba(0, 115, 170, 0.15) !important;
+}
+
+.light-mode div.bg-wp-blue-500\/20 svg {
+  color: #0073aa !important;
+}
+
+/* Ensure all lucide icons are visible */
+.light-mode svg.text-wp-blue-400,
+.light-mode .text-wp-blue-400 svg {
+  color: #0073aa !important;
+}
+
+.light-mode svg.text-violet-400,
+.light-mode .text-violet-400 svg {
+  color: #7c3aed !important;
+}
+
+.light-mode svg.text-emerald-400,
+.light-mode .text-emerald-400 svg {
+  color: #059669 !important;
+}
+
+.light-mode svg.text-orange-400,
+.light-mode .text-orange-400 svg {
+  color: #ea580c !important;
+}
+
+/* Force white icons on gradient backgrounds */
+.light-mode .from-wp-blue-500 svg,
+.light-mode .from-emerald-500 svg,
+.light-mode .bg-gradient-to-br svg,
+.light-mode .bg-gradient-to-r svg {
+  color: #ffffff !important;
+}
+
+/* Ensure inline style white icons stay white */
+.light-mode svg[style*="color: rgb(255, 255, 255)"],
+.light-mode svg[style*="color:#ffffff"],
+.light-mode svg[style*="color: #ffffff"] {
+  color: #ffffff !important;
+}
+
+/* All icons inside gradient backgrounds should be white */
+.light-mode [class*="from-wp-blue"] svg,
+.light-mode [class*="from-emerald"] svg,
+.light-mode [class*="from-violet"] svg,
+.light-mode [class*="from-orange"] svg {
+  color: #ffffff !important;
+}
+
+/* Sidebar icon colors in light mode */
+.light-mode nav svg {
+  color: #475569 !important;
+}
+
+.light-mode nav a:hover svg {
+  color: #0f172a !important;
+}
+
+.light-mode nav a.text-wp-blue-400 svg,
+.light-mode nav a[class*="bg-wp-blue"] svg {
+  color: #0073aa !important;
+}
+
+/* Zap icon for online status */
+.light-mode .text-emerald-400 svg,
+.light-mode svg.text-emerald-400 {
+  color: #059669 !important;
+}
+
+/* Fix any remaining dark icons on light backgrounds */
+.light-mode .glass svg:not([style]) {
+  color: currentColor;
+}
+
+/* Navigation - make all text readable in light mode */
+.light-mode nav a {
+  color: #334155 !important;
+}
+
+.light-mode nav a:hover {
+  color: #0f172a !important;
+}
+
+/* Active navigation item */
+.light-mode nav a.text-wp-blue-400,
+.light-mode nav a[class*="bg-wp-blue"] {
+  color: #004d73 !important;
+  background-color: rgba(0, 115, 170, 0.12) !important;
+}
+
+.light-mode nav a.text-wp-blue-400 span,
+.light-mode nav a.text-wp-blue-400 svg {
+  color: #004d73 !important;
+}
+
+/* Sidebar text improvements */
+.light-mode aside span,
+.light-mode aside p {
+  color: var(--text-secondary) !important;
+}
+
+.light-mode aside .text-xs {
+  color: var(--text-muted) !important;
+}

@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-electron/
+release/
+build/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Logs
+*.log
+
+# Generated files
+*.min.js
+*.min.css
+package-lock.json
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
