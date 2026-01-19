@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ci:** Use npm install instead of npm ci for cross-platform builds by @rajanvijayan
 - **types:** Resolve TypeScript errors in electron API types and components by @rajanvijayan
 - **ci:** Use direct git-cliff installation instead of Docker action by @rajanvijayan
+- **ci:** Use direct git-cliff in release workflow by @rajanvijayan
+
+### 📚 Documentation
+
+- Update changelog by @github-actions[bot]
 
 ### 🚀 Features
 
