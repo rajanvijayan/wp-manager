@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🐛 Bug Fixes
+
+- **ci:** Prevent auto-publish during build, use correct GitHub owner by @rajanvijayan
+
+### 📚 Documentation
+
+- Update changelog by @github-actions[bot]
+
+## [1.0.2] - 2026-01-20
+
 ### 🎨 Styling
 
 - Format changelog by @rajanvijayan
