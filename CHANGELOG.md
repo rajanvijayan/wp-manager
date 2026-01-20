@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🐛 Bug Fixes
 
+- **ci:** Clean install dependencies to fix Windows rollup issue by @rajanvijayan
+
+### 📚 Documentation
+
+- Update changelog by @github-actions[bot]
+
+## [1.0.5] - 2026-01-20
+
+### 🐛 Bug Fixes
+
 - **ci:** Use npx for vite and electron-builder commands by @rajanvijayan
 
 ### 📚 Documentation
