@@ -7,12 +7,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/username/wp-manager.git"
+    "url": "https://github.com/rajanvijayan/wp-manager.git"
   },
   "bugs": {
-    "url": "https://github.com/username/wp-manager/issues"
+    "url": "https://github.com/rajanvijayan/wp-manager/issues"
   },
-  "homepage": "https://github.com/username/wp-manager#readme",
+  "homepage": "https://github.com/rajanvijayan/wp-manager#readme",
   "scripts": {
     "dev": "vite",
     "build": "vite build && electron-builder",
@@ -69,7 +69,7 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "username",
+      "owner": "rajanvijayan",
       "repo": "wp-manager",
       "releaseType": "release"
     },
