@@ -9,6 +9,11 @@ import {
   Globe,
   ArrowUpCircle,
   Loader2,
+  Plus,
+  X,
+  Star,
+  Users,
+  Check,
 } from 'lucide-react'
 import { useSitesStore } from '@/store/sitesStore'
 
@@ -23,12 +28,24 @@ interface PluginInfo {
   siteName: string
 }
 
+interface WpOrgPlugin {
+  name: string
+  slug: string
+  version: string
+  author: string
+  rating: number
+  active_installs: number
+  short_description: string
+  icons?: Record<string, string>
+}
+
 export default function Plugins() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedSite, setSelectedSite] = useState<string>('all')
   const [plugins, setPlugins] = useState<PluginInfo[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [updatingPlugins, setUpdatingPlugins] = useState<Set<string>>(new Set())
+  const [showInstallModal, setShowInstallModal] = useState(false)
   const sites = useSitesStore((state) => state.sites)
 
   const onlineSites = sites.filter((s) => s.status === 'online')
@@ -139,6 +156,13 @@ export default function Plugins() {
         </div>
         <div className="flex items-center gap-3">
           <button
+            onClick={() => setShowInstallModal(true)}
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 py-2.5 font-medium text-white transition-all hover:from-emerald-400 hover:to-emerald-500"
+          >
+            <Plus className="h-5 w-5" />
+            Install New
+          </button>
+          <button
             onClick={fetchPlugins}
             disabled={isLoading}
             className="flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-slate-300 transition-colors hover:bg-white/10 disabled:opacity-50"
@@ -149,7 +173,7 @@ export default function Plugins() {
           {updatesAvailable > 0 && (
             <button
               onClick={updateAllPlugins}
-              className="hover-lift flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-2.5 font-medium text-white transition-all hover:from-emerald-400 hover:to-emerald-500"
+              className="hover-lift flex items-center gap-2 rounded-xl bg-gradient-to-r from-wp-blue-500 to-wp-blue-600 px-5 py-2.5 font-medium text-white transition-all hover:from-wp-blue-400 hover:to-wp-blue-500"
             >
               <Download className="h-5 w-5" />
               Update All ({updatesAvailable})
@@ -291,6 +315,314 @@ export default function Plugins() {
           </table>
         </div>
       )}
+
+      {/* Install Plugin Modal */}
+      {showInstallModal && (
+        <InstallPluginModal
+          sites={onlineSites}
+          onClose={() => setShowInstallModal(false)}
+          onInstalled={fetchPlugins}
+        />
+      )}
+    </div>
+  )
+}
+
+function InstallPluginModal({
+  sites,
+  onClose,
+  onInstalled,
+}: {
+  sites: any[]
+  onClose: () => void
+  onInstalled: () => void
+}) {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<WpOrgPlugin[]>([])
+  const [isSearching, setIsSearching] = useState(false)
+  const [selectedSites, setSelectedSites] = useState<Set<string>>(new Set())
+  const [selectedPlugin, setSelectedPlugin] = useState<WpOrgPlugin | null>(null)
+  const [isInstalling, setIsInstalling] = useState(false)
+  const [installResults, setInstallResults] = useState<
+    { siteId: string; siteName: string; success: boolean; message?: string }[]
+  >([])
+
+  const searchPlugins = async () => {
+    if (!searchQuery.trim()) return
+    setIsSearching(true)
+    try {
+      const result = await window.electronAPI.searchWpPlugins(searchQuery)
+      if (result.ok) {
+        setSearchResults(result.plugins)
+      }
+    } catch (error) {
+      console.error('Search failed:', error)
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  const toggleSite = (siteId: string) => {
+    setSelectedSites((prev) => {
+      const next = new Set(prev)
+      if (next.has(siteId)) {
+        next.delete(siteId)
+      } else {
+        next.add(siteId)
+      }
+      return next
+    })
+  }
+
+  const selectAllSites = () => {
+    setSelectedSites(new Set(sites.map((s) => s.id)))
+  }
+
+  const installPlugin = async () => {
+    if (!selectedPlugin || selectedSites.size === 0) return
+
+    setIsInstalling(true)
+    const results: { siteId: string; siteName: string; success: boolean; message?: string }[] = []
+
+    for (const siteId of selectedSites) {
+      const site = sites.find((s) => s.id === siteId)
+      if (!site) continue
+
+      try {
+        const result = await window.electronAPI.installPlugin({
+          siteUrl: site.url,
+          apiKey: site.apiKey,
+          apiSecret: site.apiSecret,
+          pluginSlug: selectedPlugin.slug,
+        })
+
+        results.push({
+          siteId: site.id,
+          siteName: site.name,
+          success: result.ok,
+          message: result.ok ? 'Installed successfully' : 'Installation failed',
+        })
+      } catch (error) {
+        results.push({
+          siteId: site.id,
+          siteName: site.name,
+          success: false,
+          message: 'Installation error',
+        })
+      }
+    }
+
+    setInstallResults(results)
+    setIsInstalling(false)
+    onInstalled()
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto py-8">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+
+      <div className="glass relative mx-4 max-h-[90vh] w-full max-w-3xl animate-slide-up overflow-y-auto rounded-2xl p-6">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-lg p-2 text-slate-400 transition-colors hover:bg-white/10"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <h2 className="mb-2 text-2xl font-bold text-white">Install New Plugin</h2>
+        <p className="mb-6 text-slate-400">
+          Search WordPress.org and install plugins on multiple sites at once
+        </p>
+
+        {/* Search */}
+        <div className="mb-6 flex gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search WordPress plugins..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && searchPlugins()}
+              className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-12 pr-4 text-white placeholder-slate-400 transition-colors focus:border-wp-blue-500 focus:outline-none"
+            />
+          </div>
+          <button
+            onClick={searchPlugins}
+            disabled={isSearching}
+            className="flex items-center gap-2 rounded-xl bg-wp-blue-500 px-5 py-3 font-medium text-white transition-colors hover:bg-wp-blue-400 disabled:opacity-50"
+          >
+            {isSearching ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Search className="h-5 w-5" />
+            )}
+            Search
+          </button>
+        </div>
+
+        {/* Search Results */}
+        {searchResults.length > 0 && !selectedPlugin && (
+          <div className="mb-6 max-h-[300px] overflow-y-auto rounded-xl border border-white/10">
+            {searchResults.map((plugin) => (
+              <button
+                key={plugin.slug}
+                onClick={() => setSelectedPlugin(plugin)}
+                className="flex w-full items-center gap-4 border-b border-white/5 p-4 text-left transition-colors hover:bg-white/5"
+              >
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-violet-500/20">
+                  {plugin.icons?.['1x'] ? (
+                    <img
+                      src={plugin.icons['1x']}
+                      alt=""
+                      className="h-full w-full rounded-lg object-cover"
+                    />
+                  ) : (
+                    <Puzzle className="h-6 w-6 text-violet-400" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-white">{plugin.name}</p>
+                  <p className="truncate text-sm text-slate-400">{plugin.short_description}</p>
+                  <div className="mt-1 flex items-center gap-3 text-xs text-slate-500">
+                    <span className="flex items-center gap-1">
+                      <Star className="h-3 w-3 text-yellow-500" />
+                      {(plugin.rating / 20).toFixed(1)}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {plugin.active_installs?.toLocaleString()}+ active
+                    </span>
+                    <span>v{plugin.version}</span>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Selected Plugin & Site Selection */}
+        {selectedPlugin && (
+          <>
+            <div className="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/20">
+                    <CheckCircle className="h-5 w-5 text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-white">{selectedPlugin.name}</p>
+                    <p className="text-sm text-slate-400">v{selectedPlugin.version}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedPlugin(null)}
+                  className="rounded-lg bg-white/10 px-3 py-1 text-sm text-slate-300 hover:bg-white/20"
+                >
+                  Change
+                </button>
+              </div>
+            </div>
+
+            {/* Site Selection */}
+            <div className="mb-6">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="font-medium text-white">Select Sites to Install On</h3>
+                <button
+                  onClick={selectAllSites}
+                  className="text-sm text-wp-blue-400 hover:text-wp-blue-300"
+                >
+                  Select All
+                </button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {sites.map((site) => (
+                  <button
+                    key={site.id}
+                    onClick={() => toggleSite(site.id)}
+                    className={`flex items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
+                      selectedSites.has(site.id)
+                        ? 'border-wp-blue-500 bg-wp-blue-500/10'
+                        : 'border-white/10 bg-white/5 hover:bg-white/10'
+                    }`}
+                  >
+                    <div
+                      className={`flex h-5 w-5 items-center justify-center rounded border ${
+                        selectedSites.has(site.id)
+                          ? 'border-wp-blue-500 bg-wp-blue-500'
+                          : 'border-white/30'
+                      }`}
+                    >
+                      {selectedSites.has(site.id) && <Check className="h-3 w-3 text-white" />}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{site.name}</p>
+                      <p className="text-xs text-slate-500">
+                        {site.url.replace(/^https?:\/\//, '')}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Install Results */}
+            {installResults.length > 0 && (
+              <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4">
+                <h4 className="mb-3 font-medium text-white">Installation Results</h4>
+                <div className="space-y-2">
+                  {installResults.map((result) => (
+                    <div
+                      key={result.siteId}
+                      className={`flex items-center gap-2 rounded-lg px-3 py-2 ${
+                        result.success ? 'bg-emerald-500/10' : 'bg-red-500/10'
+                      }`}
+                    >
+                      {result.success ? (
+                        <CheckCircle className="h-4 w-4 text-emerald-400" />
+                      ) : (
+                        <X className="h-4 w-4 text-red-400" />
+                      )}
+                      <span className={result.success ? 'text-emerald-300' : 'text-red-300'}>
+                        {result.siteName}: {result.message}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Install Button */}
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={onClose}
+                className="rounded-xl bg-white/5 px-5 py-3 font-medium text-slate-300 transition-colors hover:bg-white/10"
+              >
+                {installResults.length > 0 ? 'Done' : 'Cancel'}
+              </button>
+              {installResults.length === 0 && (
+                <button
+                  onClick={installPlugin}
+                  disabled={isInstalling || selectedSites.size === 0}
+                  className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-3 font-medium text-white transition-all hover:from-emerald-400 hover:to-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {isInstalling ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Installing...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-5 w-5" />
+                      Install on {selectedSites.size} Site{selectedSites.size !== 1 ? 's' : ''}
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }

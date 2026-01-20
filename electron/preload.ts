@@ -128,6 +128,48 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('update-status', handler)
     return () => ipcRenderer.removeListener('update-status', handler)
   },
+
+  // Plugin/Theme search & install
+  searchWpPlugins: (query: string): Promise<{ ok: boolean; plugins: any[] }> =>
+    ipcRenderer.invoke('search-wp-plugins', { query }),
+  searchWpThemes: (query: string): Promise<{ ok: boolean; themes: any[] }> =>
+    ipcRenderer.invoke('search-wp-themes', { query }),
+  installPlugin: (params: {
+    siteUrl: string
+    apiKey: string
+    apiSecret: string
+    pluginSlug: string
+  }): Promise<{ ok: boolean; status: number; data: any }> =>
+    ipcRenderer.invoke('install-plugin', params),
+  installTheme: (params: {
+    siteUrl: string
+    apiKey: string
+    apiSecret: string
+    themeSlug: string
+  }): Promise<{ ok: boolean; status: number; data: any }> =>
+    ipcRenderer.invoke('install-theme', params),
+
+  // Admin auto-login
+  getAdminLoginUrl: (params: {
+    siteUrl: string
+    apiKey: string
+    apiSecret: string
+  }): Promise<{ ok: boolean; loginUrl: string | null }> =>
+    ipcRenderer.invoke('get-admin-login-url', params),
+  openExternalUrl: (url: string): Promise<{ ok: boolean }> =>
+    ipcRenderer.invoke('open-external-url', { url }),
+
+  // Site details
+  getSiteUsers: (params: {
+    siteUrl: string
+    apiKey: string
+    apiSecret: string
+  }): Promise<{ ok: boolean; users: any[] }> => ipcRenderer.invoke('get-site-users', params),
+  getSiteStats: (params: {
+    siteUrl: string
+    apiKey: string
+    apiSecret: string
+  }): Promise<{ ok: boolean; stats: any }> => ipcRenderer.invoke('get-site-stats', params),
 })
 
 // Type declarations are in src/types/electron.d.ts

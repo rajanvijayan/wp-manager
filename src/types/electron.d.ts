@@ -1,3 +1,13 @@
+export interface ClientInfo {
+  name: string
+  email: string
+  company?: string
+  phone?: string
+  sendReports: boolean
+  reportDay?: number
+  lastReportSent?: string
+}
+
 export interface WordPressSite {
   id: string
   name: string
@@ -12,6 +22,67 @@ export interface WordPressSite {
   pluginCount?: number
   themeCount?: number
   activeTheme?: string
+  client?: ClientInfo
+}
+
+export interface WpOrgPlugin {
+  name: string
+  slug: string
+  version: string
+  author: string
+  author_profile: string
+  requires: string
+  tested: string
+  requires_php: string
+  rating: number
+  ratings: Record<number, number>
+  num_ratings: number
+  support_threads: number
+  support_threads_resolved: number
+  active_installs: number
+  downloaded: number
+  last_updated: string
+  added: string
+  homepage: string
+  short_description: string
+  description: string
+  download_link: string
+  icons: Record<string, string>
+  banners: Record<string, string>
+}
+
+export interface WpOrgTheme {
+  name: string
+  slug: string
+  version: string
+  preview_url: string
+  author: string
+  screenshot_url: string
+  rating: number
+  num_ratings: number
+  homepage: string
+  description: string
+  download_link: string
+}
+
+export interface SiteUser {
+  id: number
+  username: string
+  email: string
+  display_name: string
+  roles: string[]
+  registered: string
+}
+
+export interface SiteStats {
+  file_count: number
+  db_size: string
+  db_size_bytes: number
+  uploads_size: string
+  uploads_size_bytes: number
+  total_posts: number
+  total_pages: number
+  total_comments: number
 }
 
 export interface SiteStatusResult {
@@ -90,6 +161,39 @@ declare global {
       updaterGetStatus: () => Promise<UpdaterStatus>
       getAppVersion: () => Promise<string>
       onUpdateStatus: (callback: (status: UpdateStatus) => void) => () => void
+      // Plugin/Theme search & install
+      searchWpPlugins: (query: string) => Promise<{ ok: boolean; plugins: WpOrgPlugin[] }>
+      searchWpThemes: (query: string) => Promise<{ ok: boolean; themes: WpOrgTheme[] }>
+      installPlugin: (params: {
+        siteUrl: string
+        apiKey: string
+        apiSecret: string
+        pluginSlug: string
+      }) => Promise<{ ok: boolean; status: number; data: any }>
+      installTheme: (params: {
+        siteUrl: string
+        apiKey: string
+        apiSecret: string
+        themeSlug: string
+      }) => Promise<{ ok: boolean; status: number; data: any }>
+      // Admin auto-login
+      getAdminLoginUrl: (params: {
+        siteUrl: string
+        apiKey: string
+        apiSecret: string
+      }) => Promise<{ ok: boolean; loginUrl: string | null }>
+      openExternalUrl: (url: string) => Promise<{ ok: boolean }>
+      // Site details
+      getSiteUsers: (params: {
+        siteUrl: string
+        apiKey: string
+        apiSecret: string
+      }) => Promise<{ ok: boolean; users: SiteUser[] }>
+      getSiteStats: (params: {
+        siteUrl: string
+        apiKey: string
+        apiSecret: string
+      }) => Promise<{ ok: boolean; stats: SiteStats | null }>
     }
   }
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Plus,
   Search,
@@ -22,6 +23,9 @@ import {
   ChevronUp,
   FileText,
   Edit3,
+  LogIn,
+  Loader2,
+  Info,
 } from 'lucide-react'
 import { useSitesStore, WordPressSite } from '@/store/sitesStore'
 
@@ -115,6 +119,29 @@ function SiteCard({
   onEdit: () => void
 }) {
   const [showMenu, setShowMenu] = useState(false)
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const navigate = useNavigate()
+
+  const handleAdminLogin = async () => {
+    setIsLoggingIn(true)
+    try {
+      const result = await window.electronAPI.getAdminLoginUrl({
+        siteUrl: site.url,
+        apiKey: site.apiKey,
+        apiSecret: site.apiSecret,
+      })
+      if (result.ok && result.loginUrl) {
+        await window.electronAPI.openExternalUrl(result.loginUrl)
+      } else {
+        await window.electronAPI.openExternalUrl(`${site.url}/wp-admin`)
+      }
+    } catch (error) {
+      console.error('Failed to get login URL:', error)
+      await window.electronAPI.openExternalUrl(`${site.url}/wp-admin`)
+    } finally {
+      setIsLoggingIn(false)
+    }
+  }
 
   const statusConfig: Record<
     string,
@@ -221,11 +248,30 @@ function SiteCard({
       {/* Actions */}
       <div className="flex items-center gap-2">
         <button
+          onClick={handleAdminLogin}
+          disabled={isLoggingIn || site.status !== 'online'}
+          className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-wp-blue-500 to-wp-blue-600 py-2 text-sm font-medium text-white transition-colors hover:from-wp-blue-400 hover:to-wp-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isLoggingIn ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <LogIn className="h-4 w-4" />
+          )}
+          Admin
+        </button>
+        <button
+          onClick={() => navigate(`/sites/${site.id}`)}
+          className="rounded-lg bg-white/5 p-2 text-slate-300 transition-colors hover:bg-white/10"
+          title="View Details"
+        >
+          <Info className="h-5 w-5" />
+        </button>
+        <button
           onClick={onRefresh}
-          className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-white/5 py-2 text-sm text-slate-300 transition-colors hover:bg-white/10"
+          className="rounded-lg bg-white/5 p-2 text-slate-300 transition-colors hover:bg-white/10"
+          title="Sync"
         >
           <RefreshCw className="h-4 w-4" />
-          Sync
         </button>
         <button
           onClick={onEdit}

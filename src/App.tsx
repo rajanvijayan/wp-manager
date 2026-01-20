@@ -4,6 +4,7 @@ import Sidebar from './components/layout/Sidebar'
 import TitleBar from './components/layout/TitleBar'
 import Dashboard from './pages/Dashboard'
 import Sites from './pages/Sites'
+import SiteDetails from './pages/SiteDetails'
 import Plugins from './pages/Plugins'
 import Themes from './pages/Themes'
 import Settings from './pages/Settings'
@@ -59,6 +60,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/sites" element={<Sites />} />
+              <Route path="/sites/:siteId" element={<SiteDetails />} />
               <Route path="/plugins" element={<Plugins />} />
               <Route path="/themes" element={<Themes />} />
               <Route path="/settings" element={<Settings />} />

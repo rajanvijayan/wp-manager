@@ -527,3 +527,150 @@ ipcMain.handle('updater-get-status', () => {
 ipcMain.handle('get-app-version', () => {
   return app.getVersion()
 })
+
+// ============================================
+// PLUGIN/THEME INSTALLATION
+// ============================================
+
+// Search WordPress.org plugin directory
+ipcMain.handle('search-wp-plugins', async (_, { query }) => {
+  try {
+    const url = `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${encodeURIComponent(query)}&request[per_page]=20`
+    const result = await fetchUrl(url)
+    if (result.ok && result.data?.plugins) {
+      return { ok: true, plugins: result.data.plugins }
+    }
+    return { ok: false, plugins: [] }
+  } catch (error) {
+    console.error('Search plugins error:', error)
+    return { ok: false, plugins: [] }
+  }
+})
+
+// Search WordPress.org theme directory
+ipcMain.handle('search-wp-themes', async (_, { query }) => {
+  try {
+    const url = `https://api.wordpress.org/themes/info/1.2/?action=query_themes&request[search]=${encodeURIComponent(query)}&request[per_page]=20`
+    const result = await fetchUrl(url)
+    if (result.ok && result.data?.themes) {
+      return { ok: true, themes: result.data.themes }
+    }
+    return { ok: false, themes: [] }
+  } catch (error) {
+    console.error('Search themes error:', error)
+    return { ok: false, themes: [] }
+  }
+})
+
+// Install plugin on a site
+ipcMain.handle('install-plugin', async (_, { siteUrl, apiKey, apiSecret, pluginSlug }) => {
+  try {
+    const result = await fetchUrl(`${siteUrl}/wp-json/wp-manager/v1/plugins/install`, {
+      method: 'POST',
+      headers: {
+        'X-WP-Manager-Key': apiKey,
+        'X-WP-Manager-Secret': apiSecret,
+      },
+      body: { slug: pluginSlug },
+    })
+    return result
+  } catch (error) {
+    console.error('Install plugin error:', error)
+    return { ok: false, status: 0, data: null }
+  }
+})
+
+// Install theme on a site
+ipcMain.handle('install-theme', async (_, { siteUrl, apiKey, apiSecret, themeSlug }) => {
+  try {
+    const result = await fetchUrl(`${siteUrl}/wp-json/wp-manager/v1/themes/install`, {
+      method: 'POST',
+      headers: {
+        'X-WP-Manager-Key': apiKey,
+        'X-WP-Manager-Secret': apiSecret,
+      },
+      body: { slug: themeSlug },
+    })
+    return result
+  } catch (error) {
+    console.error('Install theme error:', error)
+    return { ok: false, status: 0, data: null }
+  }
+})
+
+// ============================================
+// ADMIN AUTO-LOGIN
+// ============================================
+
+// Get auto-login URL for a site
+ipcMain.handle('get-admin-login-url', async (_, { siteUrl, apiKey, apiSecret }) => {
+  try {
+    const result = await fetchUrl(`${siteUrl}/wp-json/wp-manager/v1/admin-login`, {
+      method: 'POST',
+      headers: {
+        'X-WP-Manager-Key': apiKey,
+        'X-WP-Manager-Secret': apiSecret,
+      },
+    })
+    if (result.ok && result.data?.login_url) {
+      return { ok: true, loginUrl: result.data.login_url }
+    }
+    return { ok: false, loginUrl: null }
+  } catch (error) {
+    console.error('Get admin login error:', error)
+    return { ok: false, loginUrl: null }
+  }
+})
+
+// Open URL in default browser
+ipcMain.handle('open-external-url', async (_, { url }) => {
+  try {
+    await shell.openExternal(url)
+    return { ok: true }
+  } catch (error) {
+    console.error('Open URL error:', error)
+    return { ok: false }
+  }
+})
+
+// ============================================
+// SITE DETAILS - USERS, FILE COUNT, DB SIZE
+// ============================================
+
+// Get users with roles from a site
+ipcMain.handle('get-site-users', async (_, { siteUrl, apiKey, apiSecret }) => {
+  try {
+    const result = await fetchUrl(`${siteUrl}/wp-json/wp-manager/v1/users`, {
+      headers: {
+        'X-WP-Manager-Key': apiKey,
+        'X-WP-Manager-Secret': apiSecret,
+      },
+    })
+    if (result.ok) {
+      return { ok: true, users: result.data }
+    }
+    return { ok: false, users: [] }
+  } catch (error) {
+    console.error('Get users error:', error)
+    return { ok: false, users: [] }
+  }
+})
+
+// Get site stats (file count, db size)
+ipcMain.handle('get-site-stats', async (_, { siteUrl, apiKey, apiSecret }) => {
+  try {
+    const result = await fetchUrl(`${siteUrl}/wp-json/wp-manager/v1/stats`, {
+      headers: {
+        'X-WP-Manager-Key': apiKey,
+        'X-WP-Manager-Secret': apiSecret,
+      },
+    })
+    if (result.ok) {
+      return { ok: true, stats: result.data }
+    }
+    return { ok: false, stats: null }
+  } catch (error) {
+    console.error('Get site stats error:', error)
+    return { ok: false, stats: null }
+  }
+})
