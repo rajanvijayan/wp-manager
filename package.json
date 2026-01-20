@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Manage all your WordPress websites from one powerful desktop app",
   "main": "dist-electron/main.js",
-  "author": "WP Manager Team",
+  "author": {
+    "name": "Rajan Vijayan",
+    "email": "developer@developer.developer"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
