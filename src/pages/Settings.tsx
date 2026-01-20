@@ -34,46 +34,83 @@ interface EmailTemplate {
 }
 
 const defaultEmailTemplate: EmailTemplate = {
-  subject: 'Monthly Website Report - {{site_name}} - {{month}} {{year}}',
+  subject: '[Monthly Report] {{site_name}} - {{month}} {{year}}',
   body: `Dear {{client_name}},
 
-Please find below the monthly report for your website {{site_name}} ({{site_url}}).
+I hope this email finds you well. Please find below your website's monthly maintenance and performance report for {{month}} {{year}}.
 
-📊 **Site Overview**
-- WordPress Version: {{wp_version}}
-- PHP Version: {{php_version}}
-- Active Theme: {{active_theme}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WEBSITE OVERVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🔌 **Plugins Summary**
-- Total Plugins: {{plugin_count}}
-- Updates Applied: {{plugins_updated}}
-- Current Status: All plugins up to date
+Website:        {{site_name}}
+URL:            {{site_url}}
+Status:         {{site_status}}
+Last Monitored: {{last_sync}}
 
-🎨 **Themes Summary**
-- Total Themes: {{theme_count}}
-- Updates Applied: {{themes_updated}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TECHNICAL SPECIFICATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📈 **Content Statistics**
-- Total Posts: {{total_posts}}
-- Total Pages: {{total_pages}}
-- Total Comments: {{total_comments}}
+WordPress Version:  {{wp_version}}
+PHP Version:        {{php_version}}
+Active Theme:       {{active_theme}}
 
-💾 **Storage**
-- Database Size: {{db_size}}
-- Media Files: {{file_count}} files ({{uploads_size}})
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MAINTENANCE SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🔒 **Security Status**
-- Site Status: {{site_status}}
-- Last Checked: {{last_sync}}
+PLUGINS
+• Total Installed:    {{plugin_count}}
+• Updates Applied:    {{plugins_updated}}
+• Status:             ✓ All plugins are up to date
 
----
+THEMES
+• Total Installed:    {{theme_count}}
+• Updates Applied:    {{themes_updated}}
+• Status:             ✓ All themes are up to date
 
-This report was generated automatically by WP Manager on {{report_date}}.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTENT STATISTICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-If you have any questions or need assistance, please don't hesitate to contact us.
+Published Posts:     {{total_posts}}
+Published Pages:     {{total_pages}}
+Approved Comments:   {{total_comments}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STORAGE & DATABASE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Database Size:       {{db_size}}
+Media Library:       {{file_count}} files
+Uploads Folder:      {{uploads_size}}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ACTIONS COMPLETED THIS MONTH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Security monitoring and uptime checks
+✓ Plugin updates and compatibility verification
+✓ Theme updates and testing
+✓ Database optimization
+✓ Backup verification
+✓ Performance monitoring
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Your website is performing well and all systems are operating normally. If you have any questions about this report or would like to discuss your website further, please don't hesitate to reach out.
+
+Thank you for your continued trust in our services.
 
 Best regards,
-{{company_name}}`,
+
+{{company_name}}
+Website Management Team
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This report was automatically generated on {{report_date}}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
 }
 
 const defaultSettings: AppSettings = {
