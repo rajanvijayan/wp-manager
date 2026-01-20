@@ -10,9 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### 🎨 Styling
 
 - Format changelog by @rajanvijayan
+- Format files by @rajanvijayan
+
+### 🐛 Bug Fixes
+
+- **ci:** Format changelog before committing by @rajanvijayan
 
 ### 📚 Documentation
 
+- Update changelog by @github-actions[bot]
 - Update changelog by @github-actions[bot]
 
 ## [1.0.3] - 2026-01-20
