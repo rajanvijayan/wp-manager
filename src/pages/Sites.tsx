@@ -25,7 +25,6 @@ import {
   Edit3,
   LogIn,
   Loader2,
-  Info,
 } from 'lucide-react'
 import { useSitesStore, WordPressSite } from '@/store/sitesStore'
 
@@ -122,7 +121,8 @@ function SiteCard({
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const navigate = useNavigate()
 
-  const handleAdminLogin = async () => {
+  const handleAdminLogin = async (e: React.MouseEvent) => {
+    e.stopPropagation()
     setIsLoggingIn(true)
     try {
       const result = await window.electronAPI.getAdminLoginUrl({
@@ -141,6 +141,10 @@ function SiteCard({
     } finally {
       setIsLoggingIn(false)
     }
+  }
+
+  const handleCardClick = () => {
+    navigate(`/sites/${site.id}`)
   }
 
   const statusConfig: Record<
@@ -163,7 +167,10 @@ function SiteCard({
   const StatusIcon = status.icon
 
   return (
-    <div className="glass hover-lift group relative rounded-2xl p-5">
+    <div
+      onClick={handleCardClick}
+      className="glass hover-lift group relative cursor-pointer rounded-2xl p-5 transition-all hover:ring-2 hover:ring-wp-blue-500/50"
+    >
       {/* Status indicator */}
       <div className={`absolute right-5 top-5 h-3 w-3 rounded-full ${status.bg} animate-pulse`} />
 
@@ -174,15 +181,16 @@ function SiteCard({
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="truncate pr-8 text-lg font-semibold text-white">{site.name}</h3>
-          <a
-            href={site.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 truncate text-sm text-slate-400 hover:text-wp-blue-400"
+          <span
+            onClick={(e) => {
+              e.stopPropagation()
+              window.open(site.url, '_blank')
+            }}
+            className="flex cursor-pointer items-center gap-1 truncate text-sm text-slate-400 hover:text-wp-blue-400"
           >
             {site.url.replace(/^https?:\/\//, '')}
             <ExternalLink className="h-3 w-3 flex-shrink-0" />
-          </a>
+          </span>
         </div>
       </div>
 
@@ -246,7 +254,7 @@ function SiteCard({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
         <button
           onClick={handleAdminLogin}
           disabled={isLoggingIn || site.status !== 'online'}
@@ -258,13 +266,6 @@ function SiteCard({
             <LogIn className="h-4 w-4" />
           )}
           Admin
-        </button>
-        <button
-          onClick={() => navigate(`/sites/${site.id}`)}
-          className="rounded-lg bg-white/5 p-2 text-slate-300 transition-colors hover:bg-white/10"
-          title="View Details"
-        >
-          <Info className="h-5 w-5" />
         </button>
         <button
           onClick={onRefresh}
@@ -292,16 +293,6 @@ function SiteCard({
             <>
               <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
               <div className="glass absolute bottom-full right-0 z-20 mb-2 w-48 rounded-xl border border-white/10 py-2">
-                <button
-                  onClick={() => {
-                    window.open(site.url + '/wp-admin', '_blank')
-                    setShowMenu(false)
-                  }}
-                  className="flex w-full items-center gap-3 px-4 py-2 text-sm text-slate-300 hover:bg-white/10"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Open WP Admin
-                </button>
                 <button
                   onClick={() => {
                     onDelete()
