@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import {
   Globe,
   Puzzle,
@@ -15,6 +16,51 @@ import { useNavigate } from 'react-router-dom'
 export default function Dashboard() {
   const sites = useSitesStore((state) => state.sites)
   const navigate = useNavigate()
+  const [pluginUpdates, setPluginUpdates] = useState(0)
+  const [themeUpdates, setThemeUpdates] = useState(0)
+
+  // Fetch actual update counts from sites
+  useEffect(() => {
+    const fetchUpdates = async () => {
+      if (!window.electronAPI) return
+
+      let pluginUpdatesCount = 0
+      let themeUpdatesCount = 0
+
+      const onlineSites = sites.filter((s) => s.status === 'online')
+
+      for (const site of onlineSites) {
+        try {
+          // Fetch plugins
+          const pluginResult = await (window as any).electronAPI.fetchFromSite({
+            url: `${site.url}/wp-json/wp-manager/v1/plugins`,
+            apiKey: site.apiKey,
+            apiSecret: site.apiSecret,
+          })
+          if (pluginResult.ok && Array.isArray(pluginResult.data)) {
+            pluginUpdatesCount += pluginResult.data.filter((p: any) => p.updateAvailable).length
+          }
+
+          // Fetch themes
+          const themeResult = await (window as any).electronAPI.fetchFromSite({
+            url: `${site.url}/wp-json/wp-manager/v1/themes`,
+            apiKey: site.apiKey,
+            apiSecret: site.apiSecret,
+          })
+          if (themeResult.ok && Array.isArray(themeResult.data)) {
+            themeUpdatesCount += themeResult.data.filter((t: any) => t.updateAvailable).length
+          }
+        } catch (error) {
+          console.error(`Failed to fetch updates from ${site.name}:`, error)
+        }
+      }
+
+      setPluginUpdates(pluginUpdatesCount)
+      setThemeUpdates(themeUpdatesCount)
+    }
+
+    fetchUpdates()
+  }, [sites])
 
   const stats = {
     totalSites: sites.length,
@@ -61,14 +107,22 @@ export default function Dashboard() {
           icon={Puzzle}
           label="Total Plugins"
           value={stats.totalPlugins}
-          trend="3 updates available"
+          trend={
+            pluginUpdates > 0
+              ? `${pluginUpdates} update${pluginUpdates !== 1 ? 's' : ''} available`
+              : 'All up to date'
+          }
           color="purple"
         />
         <StatCard
           icon={Palette}
           label="Total Themes"
           value={stats.totalThemes}
-          trend="All up to date"
+          trend={
+            themeUpdates > 0
+              ? `${themeUpdates} update${themeUpdates !== 1 ? 's' : ''} available`
+              : 'All up to date'
+          }
           color="orange"
         />
       </div>

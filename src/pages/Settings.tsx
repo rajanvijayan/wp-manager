@@ -5,7 +5,6 @@ import {
   Shield,
   Database,
   Info,
-  ExternalLink,
   Check,
   Loader2,
   Mail,
@@ -322,23 +321,9 @@ export default function Settings() {
             </div>
             <AppIcon size={48} />
           </div>
-          <div className="flex items-center gap-4">
-            <a
-              href="https://github.com/username/wp-manager"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-sm text-wp-blue-400 hover:text-wp-blue-300"
-            >
-              Documentation <ExternalLink className="h-3 w-3" />
-            </a>
-            <a
-              href="https://github.com/username/wp-manager/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-sm text-wp-blue-400 hover:text-wp-blue-300"
-            >
-              Report Issue <ExternalLink className="h-3 w-3" />
-            </a>
+          <div className="text-sm text-slate-400">
+            <p>Developed by Rajan Vijayan</p>
+            <p className="text-slate-500">me@rajanvijayan.com</p>
           </div>
         </div>
       </SettingsSection>
