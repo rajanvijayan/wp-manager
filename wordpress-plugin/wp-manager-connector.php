@@ -3,7 +3,7 @@
  * Plugin Name: WP Manager Connector
  * Plugin URI: https://github.com/your-repo/wp-manager
  * Description: Companion plugin for the WP Manager desktop application. Enables remote management of plugins, themes, and site settings.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Your Name
  * Author URI: https://yourwebsite.com
  * License: GPL v2 or later
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('WP_MANAGER_VERSION', '1.0.0');
+define('WP_MANAGER_VERSION', '1.1.0');
 define('WP_MANAGER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 
 class WP_Manager_Connector {
@@ -213,6 +213,41 @@ class WP_Manager_Connector {
         register_rest_route($namespace, '/themes/update-all', array(
             'methods' => 'POST',
             'callback' => array($this, 'update_all_themes'),
+            'permission_callback' => array($this, 'check_permission'),
+        ));
+        
+        // Install plugin from WordPress.org
+        register_rest_route($namespace, '/plugins/install', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'install_plugin'),
+            'permission_callback' => array($this, 'check_permission'),
+        ));
+        
+        // Install theme from WordPress.org
+        register_rest_route($namespace, '/themes/install', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'install_theme'),
+            'permission_callback' => array($this, 'check_permission'),
+        ));
+        
+        // Admin auto-login
+        register_rest_route($namespace, '/admin-login', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'generate_admin_login'),
+            'permission_callback' => array($this, 'check_permission'),
+        ));
+        
+        // Get users with roles
+        register_rest_route($namespace, '/users', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_users'),
+            'permission_callback' => array($this, 'check_permission'),
+        ));
+        
+        // Get site stats (file count, DB size)
+        register_rest_route($namespace, '/stats', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_site_stats'),
             'permission_callback' => array($this, 'check_permission'),
         ));
     }
@@ -549,6 +584,233 @@ class WP_Manager_Connector {
             'failed' => $failed,
         ));
     }
+    
+    /**
+     * Install a plugin from WordPress.org
+     */
+    public function install_plugin($request) {
+        $params = $request->get_json_params();
+        $slug = isset($params['slug']) ? sanitize_text_field($params['slug']) : '';
+        
+        if (empty($slug)) {
+            return new WP_Error('missing_slug', __('Plugin slug is required', 'wp-manager-connector'), array('status' => 400));
+        }
+        
+        require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+        require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/misc.php';
+        
+        // Get plugin info from WordPress.org
+        $api = plugins_api('plugin_information', array(
+            'slug' => $slug,
+            'fields' => array(
+                'short_description' => false,
+                'sections' => false,
+                'requires' => false,
+                'rating' => false,
+                'ratings' => false,
+                'downloaded' => false,
+                'last_updated' => false,
+                'added' => false,
+                'tags' => false,
+                'compatibility' => false,
+                'homepage' => false,
+                'donate_link' => false,
+            ),
+        ));
+        
+        if (is_wp_error($api)) {
+            return new WP_Error('plugin_not_found', __('Plugin not found on WordPress.org', 'wp-manager-connector'), array('status' => 404));
+        }
+        
+        $upgrader = new Plugin_Upgrader(new Automatic_Upgrader_Skin());
+        $result = $upgrader->install($api->download_link);
+        
+        if (is_wp_error($result)) {
+            return new WP_Error('install_failed', $result->get_error_message(), array('status' => 500));
+        }
+        
+        return rest_ensure_response(array(
+            'success' => true,
+            'plugin' => $slug,
+            'message' => __('Plugin installed successfully', 'wp-manager-connector'),
+        ));
+    }
+    
+    /**
+     * Install a theme from WordPress.org
+     */
+    public function install_theme($request) {
+        $params = $request->get_json_params();
+        $slug = isset($params['slug']) ? sanitize_text_field($params['slug']) : '';
+        
+        if (empty($slug)) {
+            return new WP_Error('missing_slug', __('Theme slug is required', 'wp-manager-connector'), array('status' => 400));
+        }
+        
+        require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+        require_once ABSPATH . 'wp-admin/includes/theme.php';
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/misc.php';
+        
+        // Get theme info from WordPress.org
+        $api = themes_api('theme_information', array(
+            'slug' => $slug,
+            'fields' => array(
+                'sections' => false,
+                'rating' => false,
+                'ratings' => false,
+                'downloaded' => false,
+                'download_link' => true,
+            ),
+        ));
+        
+        if (is_wp_error($api)) {
+            return new WP_Error('theme_not_found', __('Theme not found on WordPress.org', 'wp-manager-connector'), array('status' => 404));
+        }
+        
+        $upgrader = new Theme_Upgrader(new Automatic_Upgrader_Skin());
+        $result = $upgrader->install($api->download_link);
+        
+        if (is_wp_error($result)) {
+            return new WP_Error('install_failed', $result->get_error_message(), array('status' => 500));
+        }
+        
+        return rest_ensure_response(array(
+            'success' => true,
+            'theme' => $slug,
+            'message' => __('Theme installed successfully', 'wp-manager-connector'),
+        ));
+    }
+    
+    /**
+     * Generate admin auto-login URL
+     */
+    public function generate_admin_login($request) {
+        // Get the first admin user
+        $admins = get_users(array(
+            'role' => 'administrator',
+            'number' => 1,
+            'orderby' => 'ID',
+            'order' => 'ASC',
+        ));
+        
+        if (empty($admins)) {
+            return new WP_Error('no_admin', __('No administrator found', 'wp-manager-connector'), array('status' => 404));
+        }
+        
+        $admin = $admins[0];
+        
+        // Generate a one-time login token
+        $token = wp_generate_password(32, false);
+        $expiry = time() + 60; // Token expires in 60 seconds
+        
+        // Store the token in transient
+        set_transient('wp_manager_login_token_' . $token, array(
+            'user_id' => $admin->ID,
+            'expiry' => $expiry,
+        ), 60);
+        
+        // Generate the login URL
+        $login_url = add_query_arg(array(
+            'wp_manager_auto_login' => $token,
+        ), admin_url());
+        
+        return rest_ensure_response(array(
+            'success' => true,
+            'login_url' => $login_url,
+            'expires_in' => 60,
+        ));
+    }
+    
+    /**
+     * Get all users with roles
+     */
+    public function get_users($request) {
+        $users = get_users(array(
+            'orderby' => 'registered',
+            'order' => 'DESC',
+        ));
+        
+        $result = array();
+        
+        foreach ($users as $user) {
+            $result[] = array(
+                'id' => $user->ID,
+                'username' => $user->user_login,
+                'email' => $user->user_email,
+                'display_name' => $user->display_name,
+                'roles' => $user->roles,
+                'registered' => $user->user_registered,
+            );
+        }
+        
+        return rest_ensure_response($result);
+    }
+    
+    /**
+     * Get site stats (file count, DB size)
+     */
+    public function get_site_stats($request) {
+        global $wpdb;
+        
+        // Get database size
+        $db_size = 0;
+        $tables = $wpdb->get_results("SHOW TABLE STATUS", ARRAY_A);
+        if ($tables) {
+            foreach ($tables as $table) {
+                $db_size += $table['Data_length'] + $table['Index_length'];
+            }
+        }
+        
+        // Get uploads directory size and file count
+        $uploads_dir = wp_upload_dir();
+        $uploads_path = $uploads_dir['basedir'];
+        $uploads_size = 0;
+        $file_count = 0;
+        
+        if (is_dir($uploads_path)) {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($uploads_path, RecursiveDirectoryIterator::SKIP_DOTS)
+            );
+            
+            foreach ($iterator as $file) {
+                if ($file->isFile()) {
+                    $uploads_size += $file->getSize();
+                    $file_count++;
+                }
+            }
+        }
+        
+        // Get content counts
+        $total_posts = wp_count_posts('post');
+        $total_pages = wp_count_posts('page');
+        $total_comments = wp_count_comments();
+        
+        return rest_ensure_response(array(
+            'file_count' => $file_count,
+            'db_size' => $this->format_size($db_size),
+            'db_size_bytes' => $db_size,
+            'uploads_size' => $this->format_size($uploads_size),
+            'uploads_size_bytes' => $uploads_size,
+            'total_posts' => $total_posts->publish ?? 0,
+            'total_pages' => $total_pages->publish ?? 0,
+            'total_comments' => $total_comments->approved ?? 0,
+        ));
+    }
+    
+    /**
+     * Format bytes to human readable size
+     */
+    private function format_size($bytes) {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, 2) . ' ' . $units[$pow];
+    }
 }
 
 // Handle key regeneration
@@ -563,6 +825,47 @@ add_action('admin_post_wp_manager_regenerate_keys', function() {
     update_option('wp_manager_api_secret', bin2hex(random_bytes(32)));
     
     wp_redirect(admin_url('options-general.php?page=wp-manager&regenerated=1'));
+    exit;
+});
+
+// Handle auto-login
+add_action('init', function() {
+    if (!isset($_GET['wp_manager_auto_login'])) {
+        return;
+    }
+    
+    $token = sanitize_text_field($_GET['wp_manager_auto_login']);
+    $token_data = get_transient('wp_manager_login_token_' . $token);
+    
+    if (!$token_data) {
+        wp_die(__('Invalid or expired login link. Please request a new one from WP Manager.', 'wp-manager-connector'));
+    }
+    
+    // Delete the token immediately (one-time use)
+    delete_transient('wp_manager_login_token_' . $token);
+    
+    // Check if token is expired
+    if (time() > $token_data['expiry']) {
+        wp_die(__('Login link has expired. Please request a new one from WP Manager.', 'wp-manager-connector'));
+    }
+    
+    // Log in the user
+    $user_id = $token_data['user_id'];
+    $user = get_user_by('id', $user_id);
+    
+    if (!$user) {
+        wp_die(__('User not found.', 'wp-manager-connector'));
+    }
+    
+    // Clear any existing auth cookies
+    wp_clear_auth_cookie();
+    
+    // Set auth cookie
+    wp_set_auth_cookie($user_id, true);
+    wp_set_current_user($user_id);
+    
+    // Redirect to admin dashboard
+    wp_redirect(admin_url());
     exit;
 });
 

@@ -1,11 +1,10 @@
 import { app, BrowserWindow, ipcMain, shell, net, nativeImage, dialog } from 'electron'
 import path from 'path'
 import Store from 'electron-store'
-import { autoUpdater, UpdateInfo } from 'electron-updater'
+import type { UpdateInfo } from 'electron-updater'
 
-// Configure auto-updater
-autoUpdater.autoDownload = false // Don't auto-download, let user decide
-autoUpdater.autoInstallOnAppQuit = true
+// Auto-updater will be lazy-loaded to prevent initialization errors
+let autoUpdater: any = null
 
 // Set app name - this affects menu bar and some UI elements
 app.setName('WP Manager')
@@ -387,89 +386,112 @@ function sendUpdateStatus(status: string, data?: any) {
   }
 }
 
-// Auto-updater event handlers
-autoUpdater.on('checking-for-update', () => {
-  console.log('[WP Manager] Checking for updates...')
-  sendUpdateStatus('checking')
-})
+// Initialize auto-updater (lazy-loaded to prevent startup errors)
+function initAutoUpdater() {
+  if (autoUpdater) return // Already initialized
 
-autoUpdater.on('update-available', (info: UpdateInfo) => {
-  console.log('[WP Manager] Update available:', info.version)
-  updateAvailable = true
-  updateInfo = info
-  sendUpdateStatus('available', {
-    version: info.version,
-    releaseDate: info.releaseDate,
-    releaseNotes: info.releaseNotes,
-  })
-})
+  try {
+    const { autoUpdater: au } = require('electron-updater')
+    autoUpdater = au
 
-autoUpdater.on('update-not-available', (info: UpdateInfo) => {
-  console.log('[WP Manager] No updates available. Current version:', info.version)
-  updateAvailable = false
-  sendUpdateStatus('not-available', { version: info.version })
-})
+    // Configure auto-updater
+    autoUpdater.autoDownload = false
+    autoUpdater.autoInstallOnAppQuit = true
 
-autoUpdater.on('download-progress', (progress) => {
-  downloadProgress = progress.percent
-  console.log(`[WP Manager] Download progress: ${progress.percent.toFixed(1)}%`)
-  sendUpdateStatus('downloading', {
-    percent: progress.percent,
-    bytesPerSecond: progress.bytesPerSecond,
-    transferred: progress.transferred,
-    total: progress.total,
-  })
-})
+    // Auto-updater event handlers
+    autoUpdater.on('checking-for-update', () => {
+      console.log('[WP Manager] Checking for updates...')
+      sendUpdateStatus('checking')
+    })
 
-autoUpdater.on('update-downloaded', (info: UpdateInfo) => {
-  console.log('[WP Manager] Update downloaded:', info.version)
-  updateDownloaded = true
-  sendUpdateStatus('downloaded', {
-    version: info.version,
-    releaseNotes: info.releaseNotes,
-  })
-
-  // Show notification to user
-  if (mainWindow) {
-    dialog
-      .showMessageBox(mainWindow, {
-        type: 'info',
-        title: 'Update Ready',
-        message: `Version ${info.version} has been downloaded.`,
-        detail:
-          'The update will be installed when you restart the app. Would you like to restart now?',
-        buttons: ['Restart Now', 'Later'],
-        defaultId: 0,
+    autoUpdater.on('update-available', (info: UpdateInfo) => {
+      console.log('[WP Manager] Update available:', info.version)
+      updateAvailable = true
+      updateInfo = info
+      sendUpdateStatus('available', {
+        version: info.version,
+        releaseDate: info.releaseDate,
+        releaseNotes: info.releaseNotes,
       })
-      .then(({ response }) => {
-        if (response === 0) {
-          autoUpdater.quitAndInstall(false, true)
-        }
+    })
+
+    autoUpdater.on('update-not-available', (info: UpdateInfo) => {
+      console.log('[WP Manager] No updates available. Current version:', info.version)
+      updateAvailable = false
+      sendUpdateStatus('not-available', { version: info.version })
+    })
+
+    autoUpdater.on('download-progress', (progress: any) => {
+      downloadProgress = progress.percent
+      console.log(`[WP Manager] Download progress: ${progress.percent.toFixed(1)}%`)
+      sendUpdateStatus('downloading', {
+        percent: progress.percent,
+        bytesPerSecond: progress.bytesPerSecond,
+        transferred: progress.transferred,
+        total: progress.total,
       })
+    })
+
+    autoUpdater.on('update-downloaded', (info: UpdateInfo) => {
+      console.log('[WP Manager] Update downloaded:', info.version)
+      updateDownloaded = true
+      sendUpdateStatus('downloaded', {
+        version: info.version,
+        releaseNotes: info.releaseNotes,
+      })
+
+      // Show notification to user
+      if (mainWindow) {
+        dialog
+          .showMessageBox(mainWindow, {
+            type: 'info',
+            title: 'Update Ready',
+            message: `Version ${info.version} has been downloaded.`,
+            detail:
+              'The update will be installed when you restart the app. Would you like to restart now?',
+            buttons: ['Restart Now', 'Later'],
+            defaultId: 0,
+          })
+          .then(({ response }) => {
+            if (response === 0) {
+              autoUpdater.quitAndInstall(false, true)
+            }
+          })
+      }
+    })
+
+    autoUpdater.on('error', (error: Error) => {
+      console.error('[WP Manager] Auto-updater error:', error)
+      sendUpdateStatus('error', { message: error.message })
+    })
+
+    console.log('[WP Manager] Auto-updater initialized')
+  } catch (error) {
+    console.error('[WP Manager] Failed to initialize auto-updater:', error)
   }
-})
-
-autoUpdater.on('error', (error) => {
-  console.error('[WP Manager] Auto-updater error:', error)
-  sendUpdateStatus('error', { message: error.message })
-})
+}
 
 // Check for updates on app ready (only in production)
 app.whenReady().then(() => {
   if (!isDev) {
-    // Check for updates after a short delay
+    // Initialize and check for updates after a short delay
     setTimeout(() => {
-      autoUpdater.checkForUpdates().catch((err) => {
-        console.error('[WP Manager] Failed to check for updates:', err)
-      })
+      initAutoUpdater()
+      if (autoUpdater) {
+        autoUpdater.checkForUpdates().catch((err: Error) => {
+          console.error('[WP Manager] Failed to check for updates:', err)
+        })
+      }
     }, 3000)
 
     // Check for updates every 4 hours
     setInterval(
       () => {
-        autoUpdater.checkForUpdates().catch((err) => {
-          console.error('[WP Manager] Failed to check for updates:', err)
-        })
+        if (autoUpdater) {
+          autoUpdater.checkForUpdates().catch((err: Error) => {
+            console.error('[WP Manager] Failed to check for updates:', err)
+          })
+        }
       },
       4 * 60 * 60 * 1000
     )
@@ -481,6 +503,10 @@ ipcMain.handle('updater-check', async () => {
   try {
     if (isDev) {
       return { status: 'dev-mode', message: 'Updates are disabled in development mode' }
+    }
+    initAutoUpdater()
+    if (!autoUpdater) {
+      return { status: 'error', message: 'Auto-updater not available' }
     }
     const result = await autoUpdater.checkForUpdates()
     return {
@@ -495,7 +521,7 @@ ipcMain.handle('updater-check', async () => {
 
 ipcMain.handle('updater-download', async () => {
   try {
-    if (!updateAvailable) {
+    if (!updateAvailable || !autoUpdater) {
       return { status: 'no-update', message: 'No update available to download' }
     }
     await autoUpdater.downloadUpdate()
@@ -506,7 +532,7 @@ ipcMain.handle('updater-download', async () => {
 })
 
 ipcMain.handle('updater-install', () => {
-  if (updateDownloaded) {
+  if (updateDownloaded && autoUpdater) {
     autoUpdater.quitAndInstall(false, true)
     return { status: 'installing' }
   }
