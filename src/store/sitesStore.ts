@@ -41,6 +41,7 @@ interface SitesState {
   deleteSite: (id: string) => Promise<void>
   selectSite: (id: string | null) => void
   refreshSiteStatus: (id: string) => Promise<void>
+  refreshAllSites: () => Promise<void>
 }
 
 // Helper to check if electronAPI is available
@@ -181,5 +182,14 @@ export const useSitesStore = create<SitesState>((set, get) => ({
       console.error('Failed to refresh site status:', error)
       await get().updateSite(id, { status: 'offline' })
     }
+  },
+
+  refreshAllSites: async () => {
+    const sites = get().sites
+    console.log('[WP Manager] Refreshing all sites:', sites.length)
+    for (const site of sites) {
+      await get().refreshSiteStatus(site.id)
+    }
+    console.log('[WP Manager] All sites refreshed')
   },
 }))

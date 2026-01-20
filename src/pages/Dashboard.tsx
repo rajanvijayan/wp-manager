@@ -15,9 +15,11 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Dashboard() {
   const sites = useSitesStore((state) => state.sites)
+  const refreshAllSites = useSitesStore((state) => state.refreshAllSites)
   const navigate = useNavigate()
   const [pluginUpdates, setPluginUpdates] = useState(0)
   const [themeUpdates, setThemeUpdates] = useState(0)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   // Fetch actual update counts from sites
   useEffect(() => {
@@ -62,6 +64,15 @@ export default function Dashboard() {
     fetchUpdates()
   }, [sites])
 
+  const handleRefreshAll = async () => {
+    setIsRefreshing(true)
+    try {
+      await refreshAllSites()
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
   const stats = {
     totalSites: sites.length,
     onlineSites: sites.filter((s) => s.status === 'online').length,
@@ -81,9 +92,13 @@ export default function Dashboard() {
             Welcome back! Here's an overview of your WordPress sites.
           </p>
         </div>
-        <button className="flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-slate-300 transition-colors hover:bg-white/10">
-          <RefreshCw className="h-4 w-4" />
-          Refresh All
+        <button
+          onClick={handleRefreshAll}
+          disabled={isRefreshing}
+          className="flex items-center gap-2 rounded-xl bg-white/5 px-4 py-2 text-slate-300 transition-colors hover:bg-white/10 disabled:opacity-50"
+        >
+          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          {isRefreshing ? 'Refreshing...' : 'Refresh All'}
         </button>
       </div>
 
@@ -93,14 +108,18 @@ export default function Dashboard() {
           icon={Globe}
           label="Total Sites"
           value={stats.totalSites}
-          trend="+2 this month"
+          trend={`${stats.onlineSites} online`}
           color="blue"
         />
         <StatCard
           icon={CheckCircle}
           label="Online"
           value={stats.onlineSites}
-          trend="100% uptime"
+          trend={
+            stats.totalSites > 0
+              ? `${Math.round((stats.onlineSites / stats.totalSites) * 100)}% uptime`
+              : 'No sites'
+          }
           color="green"
         />
         <StatCard
@@ -173,7 +192,7 @@ export default function Dashboard() {
                 icon={RefreshCw}
                 label="Sync All Sites"
                 description="Refresh all connections"
-                onClick={() => {}}
+                onClick={handleRefreshAll}
               />
             </div>
           </div>
